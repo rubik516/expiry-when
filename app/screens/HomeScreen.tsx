@@ -9,11 +9,11 @@ import {
 } from "react-native";
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { StackParamList } from "../types/navigation";
+import RouteName, { RouteParamList } from "../types/navigation";
 
-const HomeScreen: React.FC<NativeStackScreenProps<StackParamList, "Home">> = ({
-  navigation,
-}) => {
+const HomeScreen: React.FC<
+  NativeStackScreenProps<RouteParamList, typeof RouteName.Home>
+> = ({ navigation }) => {
   const [count, setCount] = useState(0);
 
   const handleButtonClick = () => {
@@ -21,7 +21,7 @@ const HomeScreen: React.FC<NativeStackScreenProps<StackParamList, "Home">> = ({
   };
 
   const handleFloatingAction = () => {
-    navigation.navigate("NewEntry");
+    navigation.navigate(RouteName.NewEntry);
   };
 
   return (

@@ -1,11 +1,11 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useState } from "react";
 import { SafeAreaView, StyleSheet, Button } from "react-native";
-import { StackParamList } from "../types/navigation";
+import { RouteParamList } from "../types/navigation";
 import NewEntryForm from "../containers/NewEntryForm";
+import RouteName from "../types/navigation";
 
 const NewEntryScreen: React.FC<
-  NativeStackScreenProps<StackParamList, "NewEntry">
+  NativeStackScreenProps<RouteParamList, typeof RouteName.NewEntry>
 > = ({ navigation }) => {
   const submitEntry = () => {
     console.log("Submit entry");
