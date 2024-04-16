@@ -1,4 +1,4 @@
-export class Field<T = string> {
+export class Field<T> {
   #isTouched: boolean;
   #isValid: boolean;
   value: T;

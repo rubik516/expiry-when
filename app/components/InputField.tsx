@@ -1,46 +1,63 @@
-import { TextInput, StyleSheet, Text } from "react-native";
+import { TextInput, StyleSheet, Text, View, ViewStyle, TextInputProps } from "react-native";
 import { Field } from "../types/field";
+import { useGlobalTheme } from "../contexts/Themes";
 
-interface InputFieldProps {
-  field: Field;
+interface InputFieldProps<T> extends TextInputProps {
+  displayValue: string;
+  field: Field<T>;
   label: string;
-  onUpdate: (field: Field) => void;
-  placeholder?: string;
+  onUpdate?: (value: string) => void;
+  style?: ViewStyle;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
+const InputField = <T,>({
+  displayValue,
   field,
   label,
   onUpdate,
-  placeholder,
-}) => {
+  style,
+  ...props
+}: InputFieldProps<T>) => {
+  const { theme } = useGlobalTheme();
+  const styles = StyleSheet.create({
+    fieldContainer: {
+      flex: 1,
+      flexDirection: "column",
+    },
+    input: {
+      backgroundColor: "white",
+      borderRadius: theme.border.radius.light,
+      borderStyle: "solid",
+      borderWidth: theme.border.width.thin,
+      fontSize: theme.typography.regular,
+      height: theme.width.lg,
+      padding: theme.spacing.sm,
+      shadowOffset: theme.shadow.shadowOffset,
+      shadowOpacity: theme.shadow.shadowOpacity,
+      width: "100%",
+    },
+    label: {
+      fontSize: theme.typography.regular,
+      marginBottom: theme.spacing.sm,
+      paddingLeft: theme.spacing.sm,
+    },
+  });
 
   const handleChange = (value: string) => {
-    field.value = value;
-    onUpdate(field);
-  }
+    onUpdate?.(value);
+  };
+
   return (
-    <>
-      <Text>{label}</Text>
+    <View style={[styles.fieldContainer, style]}>
+      <Text style={styles.label}>{label}</Text>
       <TextInput
         style={styles.input}
         onChangeText={handleChange}
-        value={field.value}
-        placeholder="6"
-        keyboardType="numeric"
+        value={displayValue}
+        {...props}
       />
-      
-    </>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-});
 
 export default InputField;

@@ -2,8 +2,9 @@ import { StyleSheet, Text, View, ViewStyle } from "react-native";
 import Product from "../types/product";
 import {
   getMonthDDYYYY,
-  getMonthDDYYYYFromSimpleDatte,
+  getMonthDDYYYYFromSimpleDate,
 } from "../utils/formatDate";
+import { useGlobalTheme } from "../contexts/Themes";
 
 interface ProductItemCardProps {
   product: Product;
@@ -12,40 +13,40 @@ interface ProductItemCardProps {
 
 const ProductItemCard: React.FC<ProductItemCardProps> = ({
   product,
-  ...props
+  style,
 }) => {
-  const { style } = props;
+  const { theme } = useGlobalTheme();
+  const styles = StyleSheet.create({
+    cardContainer: {
+      backgroundColor: "#fff",
+      padding: theme.spacing.sm,
+      borderRadius: theme.border.radius.light,
+      shadowColor: "#111",
+      shadowOffset: theme.shadow.shadowOffset,
+      shadowOpacity: theme.shadow.shadowOpacity,
+    },
+    text: {
+      fontSize: theme.typography.regular,
+    },
+  });
 
   return (
     <View style={[styles.cardContainer, style]}>
-      <Text>Name: {product.name}</Text>
-      <Text>Open Date: {getMonthDDYYYY(product.openDate)}</Text>
-      <Text>
+      <Text style={styles.text}>Name: {product.name}</Text>
+      <Text style={styles.text}>
+        Open Date: {getMonthDDYYYY(product.openDate)}
+      </Text>
+      <Text style={styles.text}>
         Finish Date: {product.finishDate && getMonthDDYYYY(product.finishDate)}
       </Text>
-      <Text>
+      <Text style={styles.text}>
         Best Before:{" "}
-        {product.bestBefore &&
-          getMonthDDYYYYFromSimpleDatte(product.bestBefore)}
+        {product.bestBefore && getMonthDDYYYYFromSimpleDate(product.bestBefore)}
       </Text>
-      <Text>Used Within: {product.usedWithin}</Text>
-      <Text>Total Uses: {product.totalUses}</Text>
+      <Text style={styles.text}>Used Within: {product.usedWithin}</Text>
+      <Text style={styles.text}>Total Uses: {product.totalUses}</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 10,
-    shadowColor: "#111",
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    shadowOpacity: 0.6,
-  },
-});
 
 export default ProductItemCard;
