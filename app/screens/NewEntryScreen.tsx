@@ -1,9 +1,9 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { SafeAreaView, StyleSheet, Button, ScrollView, View } from "react-native";
+import { SafeAreaView, StyleSheet, ScrollView, View } from "react-native";
 import { RouteParamList } from "../types/navigation";
 import NewEntryForm from "../containers/NewEntryForm";
 import RouteName from "../types/navigation";
-import { useGlobalTheme } from "../contexts/Themes";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 
 const NewEntryScreen: React.FC<
   NativeStackScreenProps<RouteParamList, typeof RouteName.NewEntry>
@@ -13,7 +13,7 @@ const NewEntryScreen: React.FC<
     container: {
       minHeight: "100%",
       minWidth: "100%",
-      backgroundColor: "#aff",
+      backgroundColor: theme.color.primaryContainer,
       paddingHorizontal: theme.spacing.sm,
       fontSize: theme.typography.regular,
     },
@@ -21,11 +21,6 @@ const NewEntryScreen: React.FC<
       marginTop: theme.spacing.lg,
     },
   });
-
-  const submitEntry = () => {
-    console.log("Submit entry");
-    goBackToHome();
-  };
 
   const goBackToHome = () => {
     navigation.goBack();
@@ -35,7 +30,7 @@ const NewEntryScreen: React.FC<
     <SafeAreaView>
       <ScrollView style={styles.container}>
         <View style={styles.formWrapper}>
-        <NewEntryForm />
+          <NewEntryForm onSubmissionCompletion={goBackToHome} />
         </View>
       </ScrollView>
     </SafeAreaView>

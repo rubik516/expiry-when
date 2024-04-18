@@ -3,6 +3,11 @@ import { Field } from "../types/field";
 import InputField from "./InputField";
 import { getMonthDDYYYY } from "../utils/formatDate";
 import { DatePickerModal } from "react-native-paper-dates";
+import {
+  MD3LightTheme as DefaultTheme,
+  PaperProvider,
+} from "react-native-paper";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 
 interface DateTimePickerFieldProps {
   field: Field<Date>;
@@ -22,6 +27,17 @@ const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
   setShowPicker,
   style,
 }) => {
+  const {theme} = useGlobalTheme()
+  const paperTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: theme.color.secondary,
+      secondary: "yellow",
+      onSurface: theme.color.onPrimary,
+      onSurfaceVariant: theme.color.primary,
+    },
+  };
   const styles = StyleSheet.create({
     input: {
       height: 40,
@@ -69,14 +85,16 @@ const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
       />
 
       <Pressable onPress={openPicker} style={styles.pickerWrapper}>
-        <DatePickerModal
-          locale="en"
-          mode="single"
-          visible={showPicker}
-          onDismiss={closePicker}
-          date={new Date(field.value)}
-          onConfirm={onConfirmChange}
-        />
+        <PaperProvider theme={paperTheme}>
+          <DatePickerModal
+            locale="en"
+            mode="single"
+            visible={showPicker}
+            onDismiss={closePicker}
+            date={new Date(field.value)}
+            onConfirm={onConfirmChange}
+          />
+        </PaperProvider>
       </Pressable>
     </View>
   );

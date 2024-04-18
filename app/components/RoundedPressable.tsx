@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
-import { useGlobalTheme } from "../contexts/Themes";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 
 interface RoundedPressableProps {
   label: string;
@@ -14,14 +14,14 @@ const RoundedPressable: React.FC<RoundedPressableProps> = ({
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     container: {
-        padding: theme.spacing.sm,
-        backgroundColor: "#06f",
-        borderRadius: theme.border.radius.rounded,
-        paddingHorizontal: theme.spacing.md
+      padding: theme.spacing.sm,
+      backgroundColor: theme.color.primary,
+      borderRadius: theme.border.radius.rounded,
+      paddingHorizontal: theme.spacing.md,
     },
     label: {
       fontSize: theme.typography.regular,
-      color: "white"
+      color: "white",
     },
   });
   return (

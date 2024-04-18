@@ -4,7 +4,7 @@ import {
   getMonthDDYYYY,
   getMonthDDYYYYFromSimpleDate,
 } from "../utils/formatDate";
-import { useGlobalTheme } from "../contexts/Themes";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 
 interface ProductItemCardProps {
   product: Product;
@@ -26,6 +26,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       shadowOpacity: theme.shadow.shadowOpacity,
     },
     text: {
+      color: theme.color.onPrimary,
       fontSize: theme.typography.regular,
     },
   });

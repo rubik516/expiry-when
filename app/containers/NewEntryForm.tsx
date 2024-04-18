@@ -1,20 +1,20 @@
 import { useState } from "react";
-import {
-  StyleSheet,
-  Button,
-  ScrollView,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { StyleSheet, Button, Text, View, ViewStyle } from "react-native";
 import InputField from "../components/InputField";
 import DateTimePickerField from "../components/DateTimePickerField";
 import { Field } from "../types/field";
-import { useGlobalTheme } from "../contexts/Themes";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 import RoundedPressable from "../components/RoundedPressable";
 import { NOW } from "../utils/formatDate";
 
-const NewEntryForm: React.FC = () => {
+interface NewEntryFormProps {
+  onSubmissionCompletion?: () => void;
+  style?: ViewStyle;
+}
+
+const NewEntryForm: React.FC<NewEntryFormProps> = ({
+  onSubmissionCompletion,
+}) => {
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     field: {
@@ -38,6 +38,7 @@ const NewEntryForm: React.FC = () => {
       marginBottom: theme.spacing.sm,
     },
     label: {
+      color: theme.color.onPrimary,
       fontSize: theme.typography.regular,
       paddingLeft: theme.spacing.sm,
       marginBottom: theme.spacing.sm,
@@ -59,7 +60,6 @@ const NewEntryForm: React.FC = () => {
     fieldKey: K,
     value: (typeof fields)[K]["value"]
   ) => {
-    console.log("updating field", fieldKey);
     setFields((prevFields) => {
       const updatedFields = { ...prevFields };
       updatedFields[fieldKey].value = value;
@@ -73,6 +73,7 @@ const NewEntryForm: React.FC = () => {
       duration: fields.duration.value,
       bestBefore: fields.bestBefore.value,
     });
+    onSubmissionCompletion?.();
   };
 
   return (

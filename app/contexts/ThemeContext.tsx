@@ -16,7 +16,13 @@ const ThemeContext = createContext({
         rounded: 50,
       },
     },
-    color: {},
+    color: {
+      primary: "#8874a3",
+      onPrimary: "#3d1e6d",
+      primaryContainer: "#e4dcf1",
+      secondary: "tomato",
+      onSecondary: "#e56b6f"
+    },
     shadow: {
       shadowOffset: {
         width: 2,

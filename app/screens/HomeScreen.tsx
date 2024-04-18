@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Text,
   Image,
@@ -12,8 +11,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import RouteName, { RouteParamList } from "../types/navigation";
 import allProducts from "../mock-data/products";
 import ProductItemCard from "../components/ProductItemCard";
-import Product from "../types/product";
-import { useGlobalTheme } from "../contexts/Themes";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 
 const HomeScreen: React.FC<
   NativeStackScreenProps<RouteParamList, typeof RouteName.Home>
@@ -24,7 +22,7 @@ const HomeScreen: React.FC<
       position: "relative",
       minHeight: "100%",
       minWidth: "100%",
-      backgroundColor: "#0af",
+      backgroundColor: theme.color.primaryContainer,
       paddingHorizontal: theme.spacing.sm,
     },
     fab: {
@@ -32,7 +30,7 @@ const HomeScreen: React.FC<
       right: 0,
       bottom: 0,
       margin: 15,
-      backgroundColor: "#f00",
+      backgroundColor: theme.color.onSecondary,
       borderRadius: 100,
       height: 65,
       width: 65,
@@ -41,6 +39,7 @@ const HomeScreen: React.FC<
       shadowOpacity: theme.shadow.shadowOpacity,
     },
     heading: {
+      color: theme.color.onPrimary,
       fontWeight: "600",
       fontSize: theme.typography.heading,
       marginTop: theme.spacing.lg,

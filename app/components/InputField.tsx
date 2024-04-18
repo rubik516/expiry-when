@@ -1,6 +1,13 @@
-import { TextInput, StyleSheet, Text, View, ViewStyle, TextInputProps } from "react-native";
+import {
+  TextInput,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+  TextInputProps,
+} from "react-native";
 import { Field } from "../types/field";
-import { useGlobalTheme } from "../contexts/Themes";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 
 interface InputFieldProps<T> extends TextInputProps {
   displayValue: string;
@@ -27,8 +34,10 @@ const InputField = <T,>({
     input: {
       backgroundColor: "white",
       borderRadius: theme.border.radius.light,
+      borderColor: theme.color.primary,
       borderStyle: "solid",
       borderWidth: theme.border.width.thin,
+      color: theme.color.onPrimary,
       fontSize: theme.typography.regular,
       height: theme.width.lg,
       padding: theme.spacing.sm,
@@ -37,6 +46,7 @@ const InputField = <T,>({
       width: "100%",
     },
     label: {
+      color: theme.color.onPrimary,
       fontSize: theme.typography.regular,
       marginBottom: theme.spacing.sm,
       paddingLeft: theme.spacing.sm,
@@ -53,6 +63,7 @@ const InputField = <T,>({
       <TextInput
         style={styles.input}
         onChangeText={handleChange}
+        placeholderTextColor={theme.color.primaryContainer}
         value={displayValue}
         {...props}
       />
