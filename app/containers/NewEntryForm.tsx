@@ -12,6 +12,7 @@ import DateTimePickerField from "../components/DateTimePickerField";
 import { Field } from "../types/field";
 import { useGlobalTheme } from "../contexts/Themes";
 import RoundedPressable from "../components/RoundedPressable";
+import { NOW } from "../utils/formatDate";
 
 const NewEntryForm: React.FC = () => {
   const { theme } = useGlobalTheme();
@@ -47,9 +48,11 @@ const NewEntryForm: React.FC = () => {
   const [customDuration, setCustomDuration] = useState<boolean>(false);
   const [fields, setFields] = useState({
     entryTitle: new Field("", (value) => value.length > 0),
-    startDate: new Field<Date>(new Date(), (value) => !!value),
+    startDate: new Field<Date>(NOW, (value) => !!value),
     duration: new Field(""),
-    bestBefore: new Field<Date>(new Date()),
+    bestBefore: new Field<Date>(
+      new Date(NOW.getTime() + 30 * 24 * 60 * 60 * 1000)
+    ),
   });
 
   const updateField = <K extends keyof typeof fields>(
@@ -157,7 +160,6 @@ const NewEntryForm: React.FC = () => {
         label="Best Before"
         field={fields.bestBefore}
         onUpdate={(value) => updateField("bestBefore", value)}
-        placeholder="Choose a date"
         showPicker={showBestBefore}
         setShowPicker={setShowBestBefore}
         style={styles.field}

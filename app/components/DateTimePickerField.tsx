@@ -1,11 +1,8 @@
-import { StyleSheet, Pressable, View, ViewStyle } from "react-native";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import { StyleSheet, Pressable, View, ViewStyle, Button } from "react-native";
 import { Field } from "../types/field";
 import InputField from "./InputField";
 import { getMonthDDYYYY } from "../utils/formatDate";
-import { useGlobalTheme } from "../contexts/Themes";
+import { DatePickerModal } from "react-native-paper-dates";
 
 interface DateTimePickerFieldProps {
   field: Field<Date>;
@@ -21,12 +18,10 @@ const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
   field,
   label,
   onUpdate,
-  placeholder,
   showPicker,
   setShowPicker,
   style,
 }) => {
-  const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     input: {
       height: 40,
@@ -49,20 +44,17 @@ const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
     },
   });
 
-  const onPickerChange = (event: DateTimePickerEvent, _?: Date) => {
-    const {
-      type,
-      nativeEvent: { timestamp },
-    } = event;
-    console.log("type", type);
-    onUpdate(new Date(timestamp));
-    if (type === "dismissed") {
-      setShowPicker(false);
-    }
+  const closePicker = () => {
+    setShowPicker(false);
+  };
+
+  const onConfirmChange = (params: any) => {
+    const { date } = params;
+    onUpdate(date);
+    closePicker();
   };
 
   const openPicker = () => {
-    console.log("something is tap");
     setShowPicker(true);
   };
 
@@ -77,15 +69,14 @@ const DateTimePickerField: React.FC<DateTimePickerFieldProps> = ({
       />
 
       <Pressable onPress={openPicker} style={styles.pickerWrapper}>
-        {showPicker && (
-          <DateTimePicker
-            mode="date"
-            display="calendar"
-            value={new Date(field.value)}
-            onChange={onPickerChange}
-            style={styles.picker}
-          />
-        )}
+        <DatePickerModal
+          locale="en"
+          mode="single"
+          visible={showPicker}
+          onDismiss={closePicker}
+          date={new Date(field.value)}
+          onConfirm={onConfirmChange}
+        />
       </Pressable>
     </View>
   );

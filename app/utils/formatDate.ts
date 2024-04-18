@@ -1,5 +1,7 @@
 import { SimpleDate } from "../types/date";
 
+export const NOW = new Date();
+
 export function getMonthDDYYYY(timestamp: string) {
   const date = new Date(Number(timestamp));
   const day = padDate(date.getDate());
