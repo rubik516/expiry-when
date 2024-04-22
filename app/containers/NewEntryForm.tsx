@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { StyleSheet, Button, Text, View, ViewStyle } from "react-native";
 import InputField from "../components/InputField";
-import DateTimePickerField from "../components/DateTimePickerField";
+import DatePickerField from "../components/DatePickerField";
 import { Field } from "../types/field";
 import { useGlobalTheme } from "../contexts/ThemeContext";
-import RoundedPressable from "../components/RoundedPressable";
+import SelectChip from "../components/SelectChip";
 import { NOW } from "../utils/formatDate";
 
 interface NewEntryFormProps {
@@ -32,10 +32,9 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     goodForGroupRow: {
       flex: 1,
       flexDirection: "row",
-      justifyContent: "space-between",
-    },
-    groupRowMargin: {
-      marginBottom: theme.spacing.sm,
+      flexWrap: "wrap",
+      rowGap: theme.spacing.sm,
+      columnGap: theme.spacing.sm / 2,
     },
     label: {
       color: theme.color.onPrimary,
@@ -55,6 +54,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       new Date(NOW.getTime() + 30 * 24 * 60 * 60 * 1000)
     ),
   });
+  const goodForOptions = [6, 9, 12, 18, 24];
 
   const updateField = <K extends keyof typeof fields>(
     fieldKey: K,
@@ -86,7 +86,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         field={fields.entryTitle}
         style={styles.field}
       />
-      <DateTimePickerField
+      <DatePickerField
         label="Start Date"
         field={fields.startDate}
         onUpdate={(value) => updateField("startDate", value)}
@@ -98,45 +98,18 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       <View style={styles.goodForContainer}>
         <Text style={styles.label}>Good For</Text>
         <View style={styles.goodForGroup}>
-          <View style={[styles.goodForGroupRow, styles.groupRowMargin]}>
-            <RoundedPressable
-              label="6 months"
-              onPress={() => {
-                setCustomDuration(false);
-                fields.duration.value = "6";
-              }}
-            />
-            <RoundedPressable
-              label="9 months"
-              onPress={() => {
-                setCustomDuration(false);
-                fields.duration.value = "9";
-              }}
-            />
-            <RoundedPressable
-              label="12 months"
-              onPress={() => {
-                setCustomDuration(false);
-                fields.duration.value = "12";
-              }}
-            />
-          </View>
-          <View style={styles.goodForGroupRow}>
-            <RoundedPressable
-              label="18 months"
-              onPress={() => {
-                setCustomDuration(false);
-                fields.duration.value = "18";
-              }}
-            />
-            <RoundedPressable
-              label="24 months"
-              onPress={() => {
-                setCustomDuration(false);
-                fields.duration.value = "24";
-              }}
-            />
-            <RoundedPressable
+          <View style={[styles.goodForGroupRow]}>
+            {goodForOptions.map((option) => (
+              <SelectChip
+                key={option}
+                label={`${option} months`}
+                onPress={() => {
+                  setCustomDuration(false);
+                  fields.duration.value = option.toString();
+                }}
+              />
+            ))}
+            <SelectChip
               label="Custom"
               onPress={() => {
                 setCustomDuration(true);
@@ -157,7 +130,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
           />
         )}
       </View>
-      <DateTimePickerField
+      <DatePickerField
         label="Best Before"
         field={fields.bestBefore}
         onUpdate={(value) => updateField("bestBefore", value)}

@@ -28,7 +28,6 @@ const InputField = <T,>({
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     fieldContainer: {
-      flex: 1,
       flexDirection: "column",
     },
     input: {
@@ -41,6 +40,7 @@ const InputField = <T,>({
       fontSize: theme.typography.regular,
       height: theme.width.lg,
       padding: theme.spacing.sm,
+      shadowColor: theme.shadow.shadowColor,
       shadowOffset: theme.shadow.shadowOffset,
       shadowOpacity: theme.shadow.shadowOpacity,
       width: "100%",

@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 
 const BASE_UNIT = 8;
-const REGULAR_FONT_SIZE = 16
+const REGULAR_FONT_SIZE = 16;
 
 const ThemeContext = createContext({
   theme: {
@@ -21,9 +21,10 @@ const ThemeContext = createContext({
       onPrimary: "#3d1e6d",
       primaryContainer: "#e4dcf1",
       secondary: "tomato",
-      onSecondary: "#e56b6f"
+      onSecondary: "#e56b6f",
     },
     shadow: {
+      shadowColor: "#111",
       shadowOffset: {
         width: 2,
         height: 2,
@@ -37,7 +38,7 @@ const ThemeContext = createContext({
     },
     typography: {
       regular: REGULAR_FONT_SIZE,
-      heading: 2 * REGULAR_FONT_SIZE
+      heading: 2 * REGULAR_FONT_SIZE,
     },
     width: {
       sm: 4 * BASE_UNIT,

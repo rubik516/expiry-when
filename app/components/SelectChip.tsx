@@ -7,17 +7,13 @@ interface RoundedPressableProps {
   style?: ViewStyle;
 }
 
-const RoundedPressable: React.FC<RoundedPressableProps> = ({
-  label,
-  onPress,
-}) => {
+const SelectChip: React.FC<RoundedPressableProps> = ({ label, onPress }) => {
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     container: {
       padding: theme.spacing.sm,
       backgroundColor: theme.color.primary,
       borderRadius: theme.border.radius.rounded,
-      paddingHorizontal: theme.spacing.md,
     },
     label: {
       fontSize: theme.typography.regular,
@@ -31,4 +27,4 @@ const RoundedPressable: React.FC<RoundedPressableProps> = ({
   );
 };
 
-export default RoundedPressable;
+export default SelectChip;

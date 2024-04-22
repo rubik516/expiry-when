@@ -1,7 +1,6 @@
 import {
   Text,
   Image,
-  Pressable,
   SafeAreaView,
   StyleSheet,
   ScrollView,
@@ -12,6 +11,7 @@ import RouteName, { RouteParamList } from "../types/navigation";
 import allProducts from "../mock-data/products";
 import ProductItemCard from "../components/ProductItemCard";
 import { useGlobalTheme } from "../contexts/ThemeContext";
+import FloatingActionButton from "../components/FloatingActionButton";
 
 const HomeScreen: React.FC<
   NativeStackScreenProps<RouteParamList, typeof RouteName.Home>
@@ -24,19 +24,6 @@ const HomeScreen: React.FC<
       minWidth: "100%",
       backgroundColor: theme.color.primaryContainer,
       paddingHorizontal: theme.spacing.sm,
-    },
-    fab: {
-      position: "absolute",
-      right: 0,
-      bottom: 0,
-      margin: 15,
-      backgroundColor: theme.color.onSecondary,
-      borderRadius: 100,
-      height: 65,
-      width: 65,
-      shadowColor: "#111",
-      shadowOffset: theme.shadow.shadowOffset,
-      shadowOpacity: theme.shadow.shadowOpacity,
     },
     heading: {
       color: theme.color.onPrimary,
@@ -52,7 +39,7 @@ const HomeScreen: React.FC<
   const activeProducts = allProducts.filter((product) => product.isActive);
   const inactiveProducts = allProducts.filter((product) => !product.isActive);
 
-  const handleFloatingAction = () => {
+  const goToNewEntry = () => {
     navigation.navigate(RouteName.NewEntry);
   };
 
@@ -77,9 +64,9 @@ const HomeScreen: React.FC<
           />
         ))}
       </ScrollView>
-      <Pressable onPress={handleFloatingAction} style={styles.fab}>
+      <FloatingActionButton onPress={goToNewEntry}>
         <Image source={require("../assets/favicon.png")} />
-      </Pressable>
+      </FloatingActionButton>
     </SafeAreaView>
   );
 };

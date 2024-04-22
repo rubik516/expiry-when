@@ -8,6 +8,8 @@ const allProducts = [
     usedWithin: 6,
     isActive: true,
     totalUses: 125,
+    daytimeUses: 65,
+    nighttimeUses: 60,
   },
   {
     id: 2,
@@ -16,11 +18,13 @@ const allProducts = [
     finishDate: undefined,
     bestBefore: {
       month: 8,
-      year: 2025
+      year: 2025,
     },
     usedWithin: 9,
     isActive: true,
     totalUses: 52,
+    daytimeUses: 52,
+    nighttimeUses: 0,
   },
   {
     id: 3,
@@ -31,6 +35,8 @@ const allProducts = [
     usedWithin: 12,
     isActive: false,
     totalUses: 212,
+    daytimeUses: 106,
+    nighttimeUses: 106,
   },
 ];
 
