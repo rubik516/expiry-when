@@ -87,6 +87,7 @@ export default function TrackerScreen() {
           renderSectionHeader={({ section }) => (
             <Text style={styles.heading}>{section.title}</Text>
           )}
+          stickySectionHeadersEnabled={false}
           keyExtractor={(item) => item.id.toString()}
         />
       </View>

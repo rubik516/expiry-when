@@ -6,7 +6,7 @@ export default interface Product {
   id: number;
   isActive: boolean;
   name: string;
-  openDate: string;
+  openDate?: string;
   totalUses?: number;
   usedWithin?: number;
 }

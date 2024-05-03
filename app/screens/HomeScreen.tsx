@@ -4,6 +4,8 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
+  View,
+  SectionList,
 } from "react-native";
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -37,7 +39,26 @@ const HomeScreen: React.FC<
   });
 
   const activeProducts = allProducts.filter((product) => product.isActive);
-  const inactiveProducts = allProducts.filter((product) => !product.isActive);
+  const inactiveProducts = allProducts.filter(
+    (product) => !product.isActive && product.finishDate
+  );
+  const futureProducts = allProducts.filter(
+    (product) => !product.isActive && !product.openDate
+  );
+  const sections = [
+    {
+      title: "Currently using",
+      data: activeProducts,
+    },
+    {
+      title: "Saved for future",
+      data: futureProducts,
+    },
+    {
+      title: "Previously used",
+      data: inactiveProducts,
+    },
+  ];
 
   const goToNewEntry = () => {
     navigation.navigate(RouteName.NewEntry);
@@ -45,25 +66,23 @@ const HomeScreen: React.FC<
 
   return (
     <SafeAreaView>
-      <ScrollView style={styles.container}>
-        <Text style={styles.heading}>Currently using</Text>
-        {activeProducts.map((product) => (
-          <ProductItemCard
-            key={product.id}
-            product={product}
-            style={styles.itemCard}
-          />
-        ))}
-
-        <Text style={styles.heading}>Previously used</Text>
-        {inactiveProducts.map((product) => (
-          <ProductItemCard
-            key={product.id}
-            product={product}
-            style={styles.itemCard}
-          />
-        ))}
-      </ScrollView>
+      <View style={styles.container}>
+        <SectionList
+          sections={sections}
+          renderItem={({ item }) => (
+            <ProductItemCard
+              key={item.id}
+              product={item}
+              style={styles.itemCard}
+            />
+          )}
+          renderSectionHeader={({ section }) => (
+            <Text style={styles.heading}>{section.title}</Text>
+          )}
+          stickySectionHeadersEnabled={false}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </View>
       <FloatingActionButton onPress={goToNewEntry}>
         <Image source={require("../assets/favicon.png")} />
       </FloatingActionButton>

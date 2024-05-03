@@ -25,7 +25,6 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       flex: 1,
       flexDirection: "row",
       justifyContent: "space-between",
-      marginTop: theme.spacing.md,
     },
     button: {
       flexGrow: 1,
@@ -37,6 +36,9 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       shadowColor: theme.shadow.shadowColor,
       shadowOffset: theme.shadow.shadowOffset,
       shadowOpacity: theme.shadow.shadowOpacity,
+    },
+    mediumMarginTop: {
+      marginTop: theme.spacing.md,
     },
     productInfoContainer: {
       flex: 1,
@@ -60,9 +62,11 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       <View style={styles.productInfoContainer}>
         <View>
           <Text style={styles.text}>Name: {product.name}</Text>
-          <Text style={styles.text}>
-            Open Date: {getMonthDDYYYY(product.openDate)}
-          </Text>
+          {product.openDate && (
+            <Text style={styles.text}>
+              Open Date: {getMonthDDYYYY(product.openDate)}
+            </Text>
+          )}
           {product.finishDate && (
             <Text style={styles.text}>
               Finish Date: {getMonthDDYYYY(product.finishDate)}
@@ -87,7 +91,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       </View>
       {product.isActive && (
         <>
-          <View style={styles.buttonGroup}>
+          <View style={[styles.buttonGroup, styles.mediumMarginTop]}>
             <Button
               onPress={() => console.log("Use daytime")}
               label="Use daytime"
@@ -100,6 +104,13 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
             />
           </View>
         </>
+      )}
+      {!product.isActive && !product.openDate && (
+        <Button
+          onPress={() => console.log("Start using")}
+          label="Start usage"
+          viewStyles={[styles.button, styles.mediumMarginTop]}
+        />
       )}
     </View>
   );

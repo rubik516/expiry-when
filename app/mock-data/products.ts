@@ -38,6 +38,21 @@ const allProducts = [
     daytimeUses: 106,
     nighttimeUses: 106,
   },
+  {
+    id: 4,
+    name: "Product 4",
+    openDate: undefined,
+    finishDate: undefined,
+    bestBefore: {
+      month: 11,
+      year: 2026,
+    },
+    usedWithin: 12,
+    isActive: false,
+    totalUses: 0,
+    daytimeUses: 0,
+    nighttimeUses: 0,
+  },
 ];
 
 export default allProducts;
