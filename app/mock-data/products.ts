@@ -8,8 +8,8 @@ const allProducts = [
     usedWithin: 6,
     isActive: true,
     totalUses: 125,
-    daytimeUses: 65,
-    nighttimeUses: 60,
+    totalDaytimeUses: 65,
+    totalNighttimeUses: 60,
   },
   {
     id: 2,
@@ -23,8 +23,8 @@ const allProducts = [
     usedWithin: 9,
     isActive: true,
     totalUses: 52,
-    daytimeUses: 52,
-    nighttimeUses: 0,
+    totalDaytimeUses: 52,
+    totalNighttimeUses: 0,
   },
   {
     id: 3,
@@ -35,8 +35,8 @@ const allProducts = [
     usedWithin: 12,
     isActive: false,
     totalUses: 212,
-    daytimeUses: 106,
-    nighttimeUses: 106,
+    totalDaytimeUses: 106,
+    totalNighttimeUses: 106,
   },
   {
     id: 4,
@@ -50,8 +50,8 @@ const allProducts = [
     usedWithin: 12,
     isActive: false,
     totalUses: 0,
-    daytimeUses: 0,
-    nighttimeUses: 0,
+    totalDaytimeUses: 0,
+    totalNighttimeUses: 0,
   },
 ];
 

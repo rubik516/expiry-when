@@ -14,6 +14,7 @@ import allProducts from "../mock-data/products";
 import ProductItemCard from "../components/ProductItemCard";
 import { useGlobalTheme } from "../contexts/ThemeContext";
 import FloatingActionButton from "../components/FloatingActionButton";
+import Button from "../components/Button";
 
 const HomeScreen: React.FC<
   NativeStackScreenProps<RouteParamList, typeof RouteName.Home>
