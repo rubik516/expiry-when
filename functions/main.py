@@ -1,91 +1,72 @@
+"""
+From Cloud Functions docs: https://cloud.google.com/functions/docs/writing#directory-structure-python
+"Cloud Functions loads source code from a file named main.py at the root of your function directory.
+Your main file must be named main.py. The code in your main.py file must define your function entry point
+and can import other code and external dependencies as normal.The main.py file can also define multiple
+function entry points that can be deployed separately."
+
+Considering that the current project structure follows the service-oriented architecture with separate
+layers for repositories, services and controllers, this main.py file will act as the "controllers" layer,
+which exposes the APIs (cloud functions entry points) for the client(s) to interact with.
+"""
+
 from firebase_functions import https_fn
-from firebase_admin import initialize_app, firestore, credentials
 import json
 
-service_account_file = './gcloud_key.json'
-cred = credentials.Certificate(service_account_file)
-app = initialize_app(cred)
-db = firestore.client()
+from repositories.user import UserRepository
+from services.user import UserService
+from utils.exceptions import *
+from utils.firebase import FirebaseInstance
+from utils.requests import validate_request
+from validators.validate_user import validate_user
 
 
-def get_resource_collection(req: https_fn.Request, collection_name: str) -> https_fn.Response:
+firebase_app = FirebaseInstance()
+db = firebase_app.get_db()
+
+user_repo = UserRepository(db)
+user_service = UserService(user_repo)
+
+
+@https_fn.on_request()
+def create_user(request: https_fn.Request) -> https_fn.Response:
     try:
-        ref = db.collection(collection_name)
-        docs = ref.stream()
-        serialized_data = []
-        for doc in docs:
-            serialized_data.append(doc.to_dict())
-        response = {
-            "message": "Success",
-            "data": serialized_data,
-            "status": 200
-        }
-        json_response = json.dumps(response)
+        validate_request(request)
+        user_info = request.get_json()
+        validated_user_info = validate_user(user_info)
+        user = user_service.create_user(validated_user_info)
+        return https_fn.Response(f"Message with ID {user} added.", status=201)
+    except AlreadyExistsError as error:
+        print(f"Error creating user: {error}")
+        return https_fn.Response(f"User already exists", status=409)
+    except ForbiddenError as error:
+        print(f"Error creating user: {error}")
+        return https_fn.Response("Forbidden", status=403)
+    except UnauthorizedError as error:
+        print(f"Error creating user: {error}")
+        return https_fn.Response("Unauthorized", status=405)
+
+
+@https_fn.on_request()
+def get_user(request: https_fn.Request) -> https_fn.Response:
+    try:
+        validate_request(request)
+        user_id = request.args.get("user_id")
+        user = user_service.get_user(user_id)
+
         headers = {"Content-Type": "application/json"}
+        response = {"message": "Success", "data": user.to_dict(), "status": 200}
+        json_response = json.dumps(response)
         return https_fn.Response(json_response, headers=headers, status=200)
-    except Exception as e:
-        print(f"Error: {e}")
+    except ForbiddenError as error:
+        print(f"Error retrieving user: {error}")
+        return https_fn.Response("Forbidden", status=403)
+    except NotFoundError as error:
+        print(f"Error retrieving user: {error}")
+        return https_fn.Response("Not Found", status=404)
+    except UnauthorizedError as error:
+        print(f"Error retrieving user: {error}")
+        return https_fn.Response("Unauthorized", status=405)
+    except Exception as error:
+        print(f"Error: {error}")
         return https_fn.Response("Internal Server Error", status=500)
-
-
-@https_fn.on_request()
-def get_people(req: https_fn.Request) -> https_fn.Response:
-    return get_resource_collection(req, 'people')
-
-
-@https_fn.on_request()
-def get_products(req: https_fn.Request) -> https_fn.Response:
-    return get_resource_collection(req, 'products')
-
-
-@https_fn.on_request()
-def get_user(req: https_fn.Request) -> https_fn.Response:
-    user_id = req.args.get("user_id")
-    try:
-        user_ref = db.collection("users").document(user_id)
-        user = user_ref.get()
-        headers = {"Content-Type": "application/json"}
-        
-        if user.exists:
-            response = {
-                "message": "Success",
-                "data": user.to_dict(),
-                "status": 200
-            }
-            json_response = json.dumps(response)
-            return https_fn.Response(json_response, headers=headers, status=200)
-        
-        response = {
-            "message": "Not Found",
-            "status": 404
-        }
-        json_response = json.dumps(response)
-        return https_fn.Response(json_response, headers=headers, status=404)
-    except Exception as e:
-        print(f"Error: {e}")
-        return https_fn.Response("Internal Server Error", status=500)
-
-
-@https_fn.on_request()
-def create_person(req: https_fn.Request) -> https_fn.Response:
-    _, doc_ref = db.collection("people").add({"name": "TS", "hobbies": ["cats", "songwriting"]})
-    return https_fn.Response(f"Message with ID {doc_ref.id} added.", status=201)
-    
-
-@https_fn.on_request()
-def create_product(req: https_fn.Request) -> https_fn.Response:
-    product = req.get_json()
-    _, doc_ref = db.collection("products").add(product)
-    return https_fn.Response(f"Message with ID {doc_ref.id} added.", status=201)
-
-
-@https_fn.on_request()
-def create_user(req: https_fn.Request) -> https_fn.Response:
-    user_info = req.get_json()
-    user_ref = db.collection("users").document(user_info['uid'])
-    user = user_ref.get()
-    if user.exists:
-        return https_fn.Response(f"User already exists", status=403)
-    
-    user_ref.set(user_info)
-    return https_fn.Response(f"Message with ID {user_ref} added.", status=201)
