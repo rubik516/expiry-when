@@ -1,10 +1,9 @@
-import getFirebaseData from "../constants/firebase_config";
+import { getFirebaseData } from "../constants/firebase_config";
 import { ROOT_URL } from "../environment";
 
 interface RequestOptions extends RequestInit {}
 
 const request = async (endpoint: string, options: RequestOptions = {}) => {
-  console.log("requesting endpoing: ", endpoint);
   const { currentUser } = getFirebaseData();
   if (!currentUser) {
     return;
@@ -26,7 +25,6 @@ const request = async (endpoint: string, options: RequestOptions = {}) => {
   };
 
   const url = `${ROOT_URL}/${endpoint}`;
-  console.log("current url: ", url);
   return await fetch(url, requestOptions);
 };
 

@@ -9,7 +9,9 @@ import User from "../types/user";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import formatPayload from "../utils/formatPayload";
 import request from "../utils/request";
-import getFirebaseData from "../constants/firebase_config";
+import { getFirebaseData } from "../constants/firebase_config";
+import { useDialogManager } from "./DialogManagerContext";
+import { DialogRole } from "../components/Dialog";
 
 interface AuthContextProps {
   user: User | undefined;
@@ -19,6 +21,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | undefined>(undefined);
+  const { addDialogItem } = useDialogManager();
 
   const createUser = async () => {
     if (user) {
@@ -28,7 +31,10 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         body: JSON.stringify(userPayload),
       });
       if (response && !response.ok) {
-        console.log("Creating new user failed!");
+        addDialogItem({
+          message: "Creating new user failed!",
+          role: DialogRole.Danger,
+        });
       }
     }
   };
@@ -38,12 +44,19 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       return undefined;
     }
 
-    const response = await request(`get_user?user_id=${user["uid"]}`);
-    if (response && response.ok) {
-      const data = await response.json();
-      return data;
+    try {
+      const response = await request(`get_user?user_id=${user["uid"]}`);
+      if (response && response.ok) {
+        const data = await response.json();
+        return data;
+      }
+      return undefined;
+    } catch (error) {
+      addDialogItem({
+        message: "Fail retrieving user",
+        role: DialogRole.Danger,
+      });
     }
-    return undefined;
   };
 
   useEffect(() => {
@@ -78,7 +91,9 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 

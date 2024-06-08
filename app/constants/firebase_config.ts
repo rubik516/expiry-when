@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
-const FIREBASE_CONFIG = {
+export const FIREBASE_CONFIG = {
   apiKey: `${FIREBASE.apiKey}`,
   authDomain: `${FIREBASE.projectId}.firebaseapp.com`,
   databaseURL: `https://${FIREBASE.databaseName}.firebaseio.com`,
@@ -19,7 +19,7 @@ const FIREBASE_CONFIG = {
   storageBucket: `${FIREBASE.projectId}.appspot.com`,
 };
 
-const getFirebaseData = () => {
+export const getFirebaseData = () => {
   if (getApps().length < 1) {
     try {
       const app = initializeFirebaseApp(FIREBASE_CONFIG);
@@ -37,5 +37,3 @@ const getFirebaseData = () => {
   const currentUser = auth.currentUser || undefined;
   return { app, auth, currentUser };
 };
-
-export default getFirebaseData;

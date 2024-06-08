@@ -1,13 +1,13 @@
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
 import { useGlobalTheme } from "../contexts/ThemeContext";
 
-interface RoundedPressableProps {
+interface SelectChipProps {
   label: string;
   onPress: () => void;
   style?: ViewStyle;
 }
 
-const SelectChip: React.FC<RoundedPressableProps> = ({ label, onPress }) => {
+const SelectChip: React.FC<SelectChipProps> = ({ label, onPress }) => {
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     container: {
