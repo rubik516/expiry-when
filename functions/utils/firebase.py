@@ -17,7 +17,3 @@ class FirebaseInstance:
 
     def get_db(self):
         return self.db
-
-
-firebase_app = FirebaseInstance()
-db = firebase_app.get_db()

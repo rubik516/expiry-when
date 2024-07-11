@@ -77,7 +77,9 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
               Best Before: {getMonthDDYYYYFromSimpleDate(product.bestBefore)}
             </Text>
           )}
-          <Text style={styles.text}>Used Within: {product.usedWithin}</Text>
+          <Text style={styles.text}>
+            Used Within: {product.usedWithin} months
+          </Text>
           <Text style={styles.text}>Total Uses: {product.totalUses}</Text>
         </View>
         {product.isActive && (

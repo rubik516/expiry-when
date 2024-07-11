@@ -11,6 +11,7 @@ const ThemeContext = createContext({
         thick: 1.75,
       },
       radius: {
+        extraLight: 5,
         light: 10,
         heavy: 20,
         rounded: 50,

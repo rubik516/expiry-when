@@ -57,12 +57,16 @@ const Dialog: React.FC<DialogProps> = (props) => {
   };
 
   const styles = StyleSheet.create({
+    closeButton: {
+      marginLeft: theme.spacing.sm,
+    },
     container: {
       backgroundColor: backgroundVariant(item.role ?? DialogRole.Info),
       borderRadius: theme.border.radius.light,
       padding: theme.spacing.md,
       flexDirection: "row",
-      justifyContent: "space-between",
+      justifyContent: "space-around",
+      alignItems: "center",
       borderColor: onBackgroundVariant(item.role ?? DialogRole.Info),
       borderStyle: "solid",
       borderWidth: theme.border.width.thin,
@@ -72,6 +76,14 @@ const Dialog: React.FC<DialogProps> = (props) => {
       fontSize: theme.typography.regular,
       fontWeight: "600",
       color: onBackgroundVariant(item.role ?? DialogRole.Info),
+      maxWidth: "90%",
+    },
+    submessage: {
+      borderColor: onBackgroundVariant(item.role ?? DialogRole.Info),
+      borderRadius: theme.border.radius.extraLight,
+      borderWidth: theme.border.width.thin,
+      color: onBackgroundVariant(item.role ?? DialogRole.Info),
+      padding: theme.spacing.sm / 2,
     },
   });
 
@@ -85,8 +97,8 @@ const Dialog: React.FC<DialogProps> = (props) => {
       {showing && (
         <View style={styles.container}>
           <Text style={styles.message}>{item.message}</Text>
-          <Pressable onPress={closeDialog}>
-            <Text>Close</Text>
+          <Pressable onPress={closeDialog} style={styles.closeButton}>
+            <Text style={styles.submessage}>Close</Text>
           </Pressable>
         </View>
       )}

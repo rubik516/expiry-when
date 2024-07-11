@@ -45,7 +45,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
 
     try {
-      const response = await request(`get_user?user_id=${user["uid"]}`);
+      const response = await request('get_user');
       if (response && response.ok) {
         const data = await response.json();
         return data;

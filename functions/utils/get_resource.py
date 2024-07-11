@@ -1,22 +1,45 @@
-from firebase_functions import https_fn
-from google.cloud.firestore import Client
-import json
+from google.cloud.firestore import Client, Query
+from typing import Generator
 
-def get_resource_from_db(db: Client, collection_name: str) -> https_fn.Response:
+from utils.exceptions import InternalServerError
+
+
+def get_resource_from_db(
+    db: Client, collection_name: str, conditions=None, order_by=None
+):
     try:
-        ref = db.collection(collection_name)
-        docs = ref.stream()
-        serialized_data = []
-        for doc in docs:
-            serialized_data.append(doc.to_dict())
-        response = {
-            "message": "Success",
-            "data": serialized_data,
-            "status": 200
-        }
-        json_response = json.dumps(response)
-        headers = {"Content-Type": "application/json"}
-        return https_fn.Response(json_response, headers=headers, status=200)
+        query = db.collection(collection_name)
+
+        if conditions:
+            for attribute, operation, value in conditions:
+                query = query.where(attribute, operation, value)
+
+        if order_by:
+            for item in order_by:
+                if len(item) == 1:
+                    attribute = item[0]
+                    direction = Query.ASCENDING  # Default to ASCENDING
+                elif len(item) == 2:
+                    attribute, direction = item
+                else:
+                    raise ValueError(f"Invalid order_by item: {item}")
+                query = query.order_by(attribute, direction=direction)
+
+        results = query.stream()
+        return serialize(results)
     except Exception as e:
         print(f"Error: {e}")
-        return https_fn.Response("Internal Server Error", status=500)
+        # Docs for compound queries: https://firebase.google.com/docs/firestore/query-data/queries#compound_and_queries
+        raise InternalServerError(
+            f"Cannot get resource from {collection_name}. If the query is compound, it may need composite indexes. Check the database Indexes settings for more info."
+        )
+
+
+def serialize(data: Generator):
+    serialized_data = []
+    for item in data:
+        serialized_item = item.to_dict()
+        if item.id:
+            serialized_item["id"] = item.id
+        serialized_data.append(serialized_item)
+    return serialized_data

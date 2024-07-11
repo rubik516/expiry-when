@@ -9,10 +9,16 @@ import {
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import RouteName, { RouteParamList } from "../types/navigation";
-import allProducts from "../mock-data/products";
 import ProductItemCard from "../components/ProductItemCard";
 import { useGlobalTheme } from "../contexts/ThemeContext";
 import FloatingActionButton from "../components/FloatingActionButton";
+import request from "../utils/request";
+import { useDialogManager } from "../contexts/DialogManagerContext";
+import { DialogRole } from "../components/Dialog";
+import { useEffect, useState } from "react";
+import Product from "../types/product";
+import formatResponse from "../utils/formatResponse";
+import { useAuth } from "../contexts/AuthContext";
 
 const HomeScreen: React.FC<
   NativeStackScreenProps<RouteParamList, typeof RouteName.Home>
@@ -37,11 +43,36 @@ const HomeScreen: React.FC<
     },
   });
 
-  const activeProducts = allProducts.filter((product) => product.isActive);
-  const inactiveProducts = allProducts.filter(
+  const { user } = useAuth();
+  const [products, setProducts] = useState<Product[]>([]);
+  const { addDialogItem } = useDialogManager();
+
+  const fetchProducts = async () => {
+    if (!user) {
+      return;
+    }
+
+    const response = await request("get_products_by_user");
+    if (!response || !response.ok) {
+      addDialogItem({
+        message: "Retrieving products failed!",
+        role: DialogRole.Danger,
+      });
+      return;
+    }
+
+    const json = await response.json();
+    const products = json.data.map((product: unknown) =>
+      formatResponse(product)
+    );
+    setProducts(products);
+  };
+
+  const activeProducts = products.filter((product) => product.isActive);
+  const inactiveProducts = products.filter(
     (product) => !product.isActive && product.finishDate
   );
-  const futureProducts = allProducts.filter(
+  const futureProducts = products.filter(
     (product) => !product.isActive && !product.openDate
   );
   const sections = [
@@ -62,6 +93,10 @@ const HomeScreen: React.FC<
   const goToNewEntry = () => {
     navigation.navigate(RouteName.NewEntry);
   };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [user]);
 
   return (
     <SafeAreaView>

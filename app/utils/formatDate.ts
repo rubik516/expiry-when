@@ -10,11 +10,18 @@ export function getMonthDDYYYY(timestamp: string) {
   return `${month} ${day}, ${year}`;
 }
 
+export function getMonthYYYY(timestamp: string) {
+  const date = new Date(Number(timestamp));
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  return `${month} ${year}`;
+}
+
 export function getMonthDDYYYYFromSimpleDate(date: SimpleDate) {
-  const month = months[date.month - 1]; // SimpleDate is 1-based month system
+  const month = months[date.month]; // SimpleDate is 0-based month system
   const year = date.year;
   if (!date.day) {
-    return `${month}, ${year}`;
+    return `${month} ${year}`;
   }
 
   const day = padDate(date.day);

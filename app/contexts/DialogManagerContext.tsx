@@ -1,12 +1,14 @@
 import { ReactNode, createContext, useContext, useState } from "react";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-import { FlatList, StyleSheet } from "react-native";
+import { Dimensions, FlatList, StyleSheet } from "react-native";
 import Dialog, { DialogItem } from "../components/Dialog";
 import { useGlobalTheme } from "./ThemeContext";
 
+export type DialogItemInfo = Pick<DialogItem, "message" | "role">;
+
 interface DialogManagerProps {
-  addDialogItem: (item: Pick<DialogItem, "message" | "role">) => void;
+  addDialogItem: (item: DialogItemInfo) => void;
   removeItem: (item: DialogItem) => void;
 }
 
@@ -22,7 +24,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
   const styles = StyleSheet.create({
     container: {
       position: "absolute",
-      maxWidth: "100%",
+      maxWidth: Dimensions.get("window").width,
       zIndex: 10,
       bottom: 80,
       left: 0,
@@ -31,7 +33,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
     },
   });
 
-  const addDialogItem = (item: Pick<DialogItem, "message" | "role">) => {
+  const addDialogItem = (item: DialogItemInfo) => {
     const newItem: DialogItem = { ...item, show: true, id: uuidv4() };
     setItems((prevItems) => ({
       ...prevItems,
