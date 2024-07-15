@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
-import { useGlobalTheme } from "../contexts/ThemeContext";
+
+import { useGlobalTheme } from "@/contexts/ThemeContext";
 
 interface SelectChipProps {
   label: string;

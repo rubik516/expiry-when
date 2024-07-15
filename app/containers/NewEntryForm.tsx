@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, Button, Text, View, ViewStyle } from "react-native";
-import CheckboxInput from "../components/CheckboxInput";
-import DatePickerField from "../components/DatePickerField";
-import { DialogRole } from "../components/Dialog";
-import ErrorText from "../components/ErrorText";
-import InputField from "../components/InputField";
-import SelectChip from "../components/SelectChip";
-import { useDialogManager } from "../contexts/DialogManagerContext";
-import { useGlobalTheme } from "../contexts/ThemeContext";
-import Product from "../types/product";
-import { Field } from "../utils/field";
-import { NOW } from "../utils/formatDate";
-import formatPayload from "../utils/formatPayload";
-import request from "../utils/request";
-import { isFuture, isPastOf } from "../utils/validateDate";
+
+import CheckboxInput from "@/components/CheckboxInput";
+import DatePickerField from "@/components/DatePickerField";
+import { DialogRole } from "@/components/Dialog";
+import ErrorText from "@/components/ErrorText";
+import InputField from "@/components/InputField";
+import SelectChip from "@/components/SelectChip";
+import { useDialogManager } from "@/contexts/DialogManagerContext";
+import { useGlobalTheme } from "@/contexts/ThemeContext";
+import Product from "@/types/product";
+import { Field } from "@/utils/field";
+import { NOW } from "@/utils/formatDate";
+import formatPayload from "@/utils/formatPayload";
+import request from "@/utils/request";
+import { isFuture, isPastOf } from "@/utils/validateDate";
 
 interface NewEntryFormProps {
   onSubmissionCompletion?: () => void;

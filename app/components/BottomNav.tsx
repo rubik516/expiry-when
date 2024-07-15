@@ -1,7 +1,9 @@
-import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
-import RouteName from "../types/navigation";
-import { useGlobalTheme } from "../contexts/ThemeContext";
+
+import { useGlobalTheme } from "@/contexts/ThemeContext";
+import RouteName from "@/types/navigation";
+
+import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 const BottomNav: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
   const { theme } = useGlobalTheme();

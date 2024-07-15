@@ -1,9 +1,10 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SafeAreaView, StyleSheet, ScrollView, View } from "react-native";
-import { RouteParamList } from "../types/navigation";
-import NewEntryForm from "../containers/NewEntryForm";
-import RouteName from "../types/navigation";
-import { useGlobalTheme } from "../contexts/ThemeContext";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+import NewEntryForm from "@/containers/NewEntryForm";
+import { useGlobalTheme } from "@/contexts/ThemeContext";
+import RouteName from "@/types/navigation";
+import { RouteParamList } from "@/types/navigation";
 
 const NewEntryScreen: React.FC<
   NativeStackScreenProps<RouteParamList, typeof RouteName.NewEntry>

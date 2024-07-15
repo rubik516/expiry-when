@@ -1,14 +1,15 @@
 import {
-  TextInput,
   StyleSheet,
   Text,
+  TextInput,
+  TextInputProps,
   View,
   ViewStyle,
-  TextInputProps,
 } from "react-native";
-import ErrorText from "./ErrorText";
-import { useGlobalTheme } from "../contexts/ThemeContext";
-import { Field } from "../utils/field";
+
+import ErrorText from "@/components/ErrorText";
+import { useGlobalTheme } from "@/contexts/ThemeContext";
+import { Field } from "@/utils/field";
 
 interface InputFieldProps<T> extends TextInputProps {
   displayValue: string;

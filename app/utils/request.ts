@@ -1,5 +1,5 @@
-import { getFirebaseData } from "../constants/firebase_config";
-import { ROOT_URL } from "../environment";
+import { getFirebaseData } from "@/constants/firebase_config";
+import { ROOT_URL } from "@/environment";
 
 interface RequestOptions extends RequestInit {}
 

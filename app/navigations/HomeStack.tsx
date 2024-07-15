@@ -1,7 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RouteName, { RouteParamList } from "../types/navigation";
-import HomeScreen from "../screens/HomeScreen";
-import NewEntryScreen from "../screens/NewEntryScreen";
+
+import HomeScreen from "@/screens/HomeScreen";
+import NewEntryScreen from "@/screens/NewEntryScreen";
+import RouteName, { RouteParamList } from "@/types/navigation";
 
 const Stack = createNativeStackNavigator<RouteParamList>();
 

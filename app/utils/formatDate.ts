@@ -1,4 +1,4 @@
-import { SimpleDate } from "../types/date";
+import { SimpleDate } from "@/types/date";
 
 export const NOW = new Date();
 

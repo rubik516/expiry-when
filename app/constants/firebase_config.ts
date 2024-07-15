@@ -3,13 +3,14 @@ import {
   getApps,
   initializeApp as initializeFirebaseApp,
 } from "firebase/app";
-import FIREBASE from "./firebase";
 import {
   getAuth,
   getReactNativePersistence,
   initializeAuth,
 } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+
+import FIREBASE from "@/constants/firebase";
 
 export const FIREBASE_CONFIG = {
   apiKey: `${FIREBASE.apiKey}`,

@@ -1,9 +1,10 @@
 import { StyleSheet, Pressable, View, ViewStyle } from "react-native";
-import InputField from "./InputField";
-import SingleDatePicker from "./SingleDatePicker";
-import { useGlobalTheme } from "../contexts/ThemeContext";
-import { Field } from "../utils/field";
-import { getMonthDDYYYY, getMonthYYYY, NOW } from "../utils/formatDate";
+
+import InputField from "@/components/InputField";
+import SingleDatePicker from "@/components/SingleDatePicker";
+import { useGlobalTheme } from "@/contexts/ThemeContext";
+import { Field } from "@/utils/field";
+import { getMonthDDYYYY, getMonthYYYY, NOW } from "@/utils/formatDate";
 
 interface DatePickerFieldProps {
   error?: string;
@@ -13,7 +14,7 @@ interface DatePickerFieldProps {
   onUpdate: (value: Date) => void;
   placeholder?: string;
   setShowPicker: (value: boolean) => void;
-  showError: boolean;
+  showError?: boolean;
   showPicker: boolean;
   style?: ViewStyle;
 }

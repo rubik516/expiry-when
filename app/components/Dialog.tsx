@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { useGlobalTheme } from "../contexts/ThemeContext";
+
+import { useGlobalTheme } from "@/contexts/ThemeContext";
 
 export enum DialogRole {
   Danger = "danger",

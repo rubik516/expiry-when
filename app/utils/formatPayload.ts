@@ -1,4 +1,4 @@
-import camelToSnake from "./camelToSnake";
+import camelToSnake from "@/utils/camelToSnake";
 
 export default function formatPayload(payload: object) {
   const formattedPayload = recursiveCamelKeysToSnakeCase(payload);

@@ -1,3 +1,4 @@
+import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import React, {
   createContext,
   useState,
@@ -5,13 +6,13 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import User from "../types/user";
-import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
-import formatPayload from "../utils/formatPayload";
-import request from "../utils/request";
-import { getFirebaseData } from "../constants/firebase_config";
-import { useDialogManager } from "./DialogManagerContext";
-import { DialogRole } from "../components/Dialog";
+
+import { DialogRole } from "@/components/Dialog";
+import { getFirebaseData } from "@/constants/firebase_config";
+import { useDialogManager } from "@/contexts/DialogManagerContext";
+import User from "@/types/user";
+import formatPayload from "@/utils/formatPayload";
+import request from "@/utils/request";
 
 interface AuthContextProps {
   user: User | undefined;
@@ -45,7 +46,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
 
     try {
-      const response = await request('get_user');
+      const response = await request("get_user");
       if (response && response.ok) {
         const data = await response.json();
         return data;
@@ -91,9 +92,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
   );
 };
 

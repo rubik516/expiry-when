@@ -1,4 +1,4 @@
-import { SimpleDate } from "./date";
+import { SimpleDate } from "@/types/date";
 
 export default interface Product {
   bestBefore?: SimpleDate;

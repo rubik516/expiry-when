@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { useGlobalTheme } from "../contexts/ThemeContext";
+
+import { useGlobalTheme } from "@/contexts/ThemeContext";
 
 interface CheckboxInputProps {
   checked: boolean;

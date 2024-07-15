@@ -1,9 +1,10 @@
 import { ReactNode, createContext, useContext, useState } from "react";
-import "react-native-get-random-values";
-import { v4 as uuidv4 } from "uuid";
 import { Dimensions, FlatList, StyleSheet } from "react-native";
-import Dialog, { DialogItem } from "../components/Dialog";
-import { useGlobalTheme } from "./ThemeContext";
+import "react-native-get-random-values"; // uuid depends on crypto.getRandomValues: https://github.com/LinusU/react-native-get-random-values#readme
+import { v4 as uuidv4 } from "uuid";
+
+import Dialog, { DialogItem } from "@/components/Dialog";
+import { useGlobalTheme } from "@/contexts/ThemeContext";
 
 export type DialogItemInfo = Pick<DialogItem, "message" | "role">;
 

@@ -3,7 +3,8 @@ import {
   PaperProvider,
 } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
-import { useGlobalTheme } from "../contexts/ThemeContext";
+
+import { useGlobalTheme } from "@/contexts/ThemeContext";
 
 interface SingleDatePickerProps {
   date: Date;

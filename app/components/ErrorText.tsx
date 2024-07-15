@@ -1,5 +1,6 @@
 import { StyleSheet, Text, ViewStyle } from "react-native";
-import { useGlobalTheme } from "../contexts/ThemeContext";
+
+import { useGlobalTheme } from "@/contexts/ThemeContext";
 
 interface ErrorTextProps {
   text: string;

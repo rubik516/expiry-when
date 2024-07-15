@@ -1,4 +1,4 @@
-import snakeToCamel from "./snakeToCamel";
+import snakeToCamel from "@/utils/snakeToCamel";
 
 export default function formatResponse(response: unknown) {
   const formattedResponse = recursiveSnakeKeysToCamelCase(response);

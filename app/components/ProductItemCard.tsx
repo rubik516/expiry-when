@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
-import Button, { Variant } from "./Button";
-import { useGlobalTheme } from "../contexts/ThemeContext";
-import Product from "../types/product";
+
+import Button, { Variant } from "@/components/Button";
+import { useGlobalTheme } from "@/contexts/ThemeContext";
+import Product from "@/types/product";
 import {
   getMonthDDYYYY,
   getMonthDDYYYYFromSimpleDate,
-} from "../utils/formatDate";
+} from "@/utils/formatDate";
 
 interface ProductItemCardProps {
   product: Product;

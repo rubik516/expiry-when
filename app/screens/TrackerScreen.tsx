@@ -6,11 +6,12 @@ import {
   Text,
   View,
 } from "react-native";
-import DatePickerField from "../components/DatePickerField";
-import { useGlobalTheme } from "../contexts/ThemeContext";
-import usages from "../mock-data/usages";
-import { Field } from "../utils/field";
-import { NOW } from "../utils/formatDate";
+
+import DatePickerField from "@/components/DatePickerField";
+import { useGlobalTheme } from "@/contexts/ThemeContext";
+import usages from "@/mock-data/usages";
+import { Field } from "@/utils/field";
+import { NOW } from "@/utils/formatDate";
 
 export default function TrackerScreen() {
   const { theme } = useGlobalTheme();
@@ -31,7 +32,7 @@ export default function TrackerScreen() {
   });
 
   const [dateField, setDateField] = useState(
-    new Field<Date>(NOW, (value) => !!value)
+    new Field<Date | undefined>(NOW, (value) => !!value)
   );
   const [showPicker, setShowPicker] = useState(false);
 
@@ -56,6 +57,7 @@ export default function TrackerScreen() {
       title: "Daytime",
       data: usages.filter(
         (usage) =>
+          dateField.value &&
           isSameDate(new Date(Number(usage.useDate)), dateField.value) &&
           usage.useTime === "daytime"
       ),
@@ -64,6 +66,7 @@ export default function TrackerScreen() {
       title: "Nighttime",
       data: usages.filter(
         (usage) =>
+          dateField.value &&
           isSameDate(new Date(Number(usage.useDate)), dateField.value) &&
           usage.useTime === "nighttime"
       ),

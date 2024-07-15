@@ -1,4 +1,4 @@
-import { NOW } from "./formatDate";
+import { NOW } from "@/utils/formatDate";
 
 /** Check if date is in the future of the current moment.
  *

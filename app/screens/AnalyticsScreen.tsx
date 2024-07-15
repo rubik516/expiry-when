@@ -1,5 +1,6 @@
 import { SafeAreaView, StyleSheet, Text } from "react-native";
-import { useGlobalTheme } from "../contexts/ThemeContext";
+
+import { useGlobalTheme } from "@/contexts/ThemeContext";
 
 export default function TrackerScreen() {
   const { theme } = useGlobalTheme();
