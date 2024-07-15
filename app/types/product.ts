@@ -7,6 +7,8 @@ export default interface Product {
   isActive: boolean;
   name: string;
   openDate?: string;
+  totalDaytimeUses: number;
+  totalNighttimeUses: number;
   totalUses?: number;
   usedWithin?: number;
 }

@@ -23,13 +23,13 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     container: {
-      position: "absolute",
-      maxWidth: Dimensions.get("window").width,
-      zIndex: 10,
       bottom: 80,
       left: 0,
-      right: 0,
       marginHorizontal: theme.spacing.sm,
+      maxWidth: Dimensions.get("window").width,
+      position: "absolute",
+      right: 0,
+      zIndex: 10,
     },
   });
 

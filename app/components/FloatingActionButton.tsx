@@ -1,6 +1,6 @@
+import { PropsWithChildren } from "react";
 import { Pressable, StyleSheet, ViewStyle } from "react-native";
 import { useGlobalTheme } from "../contexts/ThemeContext";
-import { PropsWithChildren } from "react";
 
 interface FloatingActionButtonProps extends PropsWithChildren {
   onPress: () => void;

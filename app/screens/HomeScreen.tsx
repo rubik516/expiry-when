@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import {
   Text,
   Image,
@@ -6,19 +7,19 @@ import {
   View,
   SectionList,
 } from "react-native";
-
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import RouteName, { RouteParamList } from "../types/navigation";
-import ProductItemCard from "../components/ProductItemCard";
-import { useGlobalTheme } from "../contexts/ThemeContext";
-import FloatingActionButton from "../components/FloatingActionButton";
-import request from "../utils/request";
-import { useDialogManager } from "../contexts/DialogManagerContext";
+import { useFocusEffect } from "@react-navigation/native";
 import { DialogRole } from "../components/Dialog";
-import { useEffect, useState } from "react";
+import FloatingActionButton from "../components/FloatingActionButton";
+import ProductItemCard from "../components/ProductItemCard";
+import { useAuth } from "../contexts/AuthContext";
+import { useDialogManager } from "../contexts/DialogManagerContext";
+import { useGlobalTheme } from "../contexts/ThemeContext";
+import RouteName, { RouteParamList } from "../types/navigation";
 import Product from "../types/product";
 import formatResponse from "../utils/formatResponse";
-import { useAuth } from "../contexts/AuthContext";
+import request from "../utils/request";
+
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const HomeScreen: React.FC<
   NativeStackScreenProps<RouteParamList, typeof RouteName.Home>
@@ -94,9 +95,11 @@ const HomeScreen: React.FC<
     navigation.navigate(RouteName.NewEntry);
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, [user]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchProducts();
+    }, [user])
+  );
 
   return (
     <SafeAreaView>

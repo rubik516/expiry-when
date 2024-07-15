@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
+import Button, { Variant } from "./Button";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 import Product from "../types/product";
 import {
   getMonthDDYYYY,
   getMonthDDYYYYFromSimpleDate,
 } from "../utils/formatDate";
-import { useGlobalTheme } from "../contexts/ThemeContext";
-import Button, { Variant } from "./Button";
 
 interface ProductItemCardProps {
   product: Product;
@@ -86,8 +86,8 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
           <Button
             onPress={() => console.log("Finish today")}
             label="Finish"
-            viewStyles={[styles.smallMarginLeft, styles.alignSelfStart]}
             variant={Variant.Secondary}
+            viewStyles={[styles.smallMarginLeft, styles.alignSelfStart]}
           />
         )}
       </View>

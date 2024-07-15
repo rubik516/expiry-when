@@ -1,26 +1,32 @@
 import { StyleSheet, Pressable, View, ViewStyle } from "react-native";
-import { Field } from "../types/field";
 import InputField from "./InputField";
-import { getMonthDDYYYY } from "../utils/formatDate";
-import { useGlobalTheme } from "../contexts/ThemeContext";
 import SingleDatePicker from "./SingleDatePicker";
+import { useGlobalTheme } from "../contexts/ThemeContext";
+import { Field } from "../utils/field";
+import { getMonthDDYYYY, getMonthYYYY, NOW } from "../utils/formatDate";
 
 interface DatePickerFieldProps {
-  field: Field<Date>;
+  error?: string;
+  field: Field<Date | undefined>;
+  isSimpleDate?: boolean;
   label: string;
   onUpdate: (value: Date) => void;
   placeholder?: string;
-  showPicker: boolean;
   setShowPicker: (value: boolean) => void;
+  showError: boolean;
+  showPicker: boolean;
   style?: ViewStyle;
 }
 
 const DatePickerField: React.FC<DatePickerFieldProps> = ({
+  error,
   field,
+  isSimpleDate,
   label,
   onUpdate,
-  showPicker,
   setShowPicker,
+  showError,
+  showPicker,
   style,
 }) => {
   const { theme } = useGlobalTheme();
@@ -45,6 +51,12 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
     setShowPicker(false);
   };
 
+  const displayValue = field.value
+    ? isSimpleDate
+      ? getMonthYYYY(field.value.getTime().toString())
+      : getMonthDDYYYY(field.value.getTime().toString())
+    : getMonthDDYYYY(NOW.getTime().toString());
+
   const onConfirmChange = (params: any) => {
     const { date } = params;
     onUpdate(date);
@@ -58,15 +70,17 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
   return (
     <View style={[styles.fieldWrapper, style]}>
       <InputField
-        displayValue={getMonthDDYYYY(field.value.getTime().toString())}
-        label={label}
-        field={field}
+        displayValue={displayValue}
         editable={false}
+        error={error}
+        field={field}
+        label={label}
+        showError={showError}
       />
 
       <Pressable onPress={openPicker} style={styles.pickerWrapper}>
         <SingleDatePicker
-          date={new Date(field.value)}
+          date={field.value ? new Date(field.value) : new Date()}
           onConfirm={onConfirmChange}
           onDismiss={closePicker}
           visible={showPicker}

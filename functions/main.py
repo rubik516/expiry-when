@@ -14,15 +14,15 @@ which exposes the APIs (cloud functions entry points) for the client(s) to inter
 from firebase_functions import https_fn
 import json
 
-from repositories.user import UserRepository
 from repositories.product import ProductRepository
-from services.user import UserService
+from repositories.user import UserRepository
 from services.product import ProductService
+from services.user import UserService
 from utils.exceptions import *
 from utils.firebase import FirebaseInstance
 from utils.requests import validate_request
-from validators.validate_user import validate_user
 from validators.validate_product import validate_product
+from validators.validate_user import validate_user
 
 
 firebase_app = FirebaseInstance()
@@ -76,7 +76,6 @@ def get_products_by_user(request: https_fn.Request) -> https_fn.Response:
     try:
         user_id = validate_request(request)
         products = product_service.get_products_by_user(user_id)
-        print("From main.py: products = ", products)
 
         headers = {"Content-Type": "application/json"}
         response = {"message": "Success", "data": products, "status": 200}
@@ -118,5 +117,3 @@ def get_user(request: https_fn.Request) -> https_fn.Response:
     except Exception as error:
         print(f"Error: {error}")
         return https_fn.Response("Internal Server Error", status=500)
-
-

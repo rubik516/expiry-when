@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   SafeAreaView,
   SectionList,
@@ -5,12 +6,11 @@ import {
   Text,
   View,
 } from "react-native";
-import { useGlobalTheme } from "../contexts/ThemeContext";
 import DatePickerField from "../components/DatePickerField";
-import { useState } from "react";
-import { Field } from "../types/field";
-import { NOW } from "../utils/formatDate";
+import { useGlobalTheme } from "../contexts/ThemeContext";
 import usages from "../mock-data/usages";
+import { Field } from "../utils/field";
+import { NOW } from "../utils/formatDate";
 
 export default function TrackerScreen() {
   const { theme } = useGlobalTheme();

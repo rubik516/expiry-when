@@ -6,22 +6,27 @@ import {
   ViewStyle,
   TextInputProps,
 } from "react-native";
-import { Field } from "../types/field";
+import ErrorText from "./ErrorText";
 import { useGlobalTheme } from "../contexts/ThemeContext";
+import { Field } from "../utils/field";
 
 interface InputFieldProps<T> extends TextInputProps {
   displayValue: string;
+  error?: string;
   field: Field<T>;
   label: string;
   onUpdate?: (value: string) => void;
+  showError?: boolean;
   style?: ViewStyle;
 }
 
 const InputField = <T,>({
   displayValue,
+  error,
   field,
   label,
   onUpdate,
+  showError,
   style,
   ...props
 }: InputFieldProps<T>) => {
@@ -29,6 +34,9 @@ const InputField = <T,>({
   const styles = StyleSheet.create({
     fieldContainer: {
       flexDirection: "column",
+    },
+    error: {
+      color: theme.color.onDanger,
     },
     input: {
       backgroundColor: "white",
@@ -61,12 +69,13 @@ const InputField = <T,>({
     <View style={[styles.fieldContainer, style]}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        style={styles.input}
         onChangeText={handleChange}
         placeholderTextColor={theme.color.primaryContainer}
+        style={styles.input}
         value={displayValue}
         {...props}
       />
+      {showError && <ErrorText text={error ?? "Something happened"} />}
     </View>
   );
 };

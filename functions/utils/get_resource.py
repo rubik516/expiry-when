@@ -27,8 +27,8 @@ def get_resource_from_db(
 
         results = query.stream()
         return serialize(results)
-    except Exception as e:
-        print(f"Error: {e}")
+    except Exception as error:
+        print(f"Error: {error}")
         # Docs for compound queries: https://firebase.google.com/docs/firestore/query-data/queries#compound_and_queries
         raise InternalServerError(
             f"Cannot get resource from {collection_name}. If the query is compound, it may need composite indexes. Check the database Indexes settings for more info."

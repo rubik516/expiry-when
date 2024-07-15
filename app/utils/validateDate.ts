@@ -11,6 +11,18 @@ export function isFuture(date: Date) {
   return date.getTime() > NOW.getTime();
 }
 
+/** Check if otherDate is in the future of date.
+ *
+ * @method isFutureOf
+ * @param date a pivot Date object
+ * @param otherDate a Date object to evaluate
+ *
+ * @returns Whether otherDate is in the future of date.
+ */
+export function isFutureOf(date: Date, otherDate: Date) {
+  return otherDate.getTime() > date.getTime();
+}
+
 /** Check if date is in the past of the current moment.
  *
  * @method isPast

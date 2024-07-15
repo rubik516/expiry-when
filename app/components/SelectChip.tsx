@@ -4,20 +4,25 @@ import { useGlobalTheme } from "../contexts/ThemeContext";
 interface SelectChipProps {
   label: string;
   onPress: () => void;
+  selected: boolean;
   style?: ViewStyle;
 }
 
-const SelectChip: React.FC<SelectChipProps> = ({ label, onPress }) => {
+const SelectChip: React.FC<SelectChipProps> = ({
+  label,
+  onPress,
+  selected,
+}) => {
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     container: {
-      padding: theme.spacing.sm,
-      backgroundColor: theme.color.primary,
+      backgroundColor: selected ? "black" : theme.color.primary,
       borderRadius: theme.border.radius.rounded,
+      padding: theme.spacing.md,
     },
     label: {
-      fontSize: theme.typography.regular,
       color: "white",
+      fontSize: theme.typography.regular,
     },
   });
   return (

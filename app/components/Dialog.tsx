@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { useGlobalTheme } from "../contexts/ThemeContext";
-import { useState } from "react";
 
 export enum DialogRole {
   Danger = "danger",
@@ -22,7 +22,7 @@ interface DialogProps {
 }
 
 const Dialog: React.FC<DialogProps> = (props) => {
-  const { item, removeItem, style } = props;
+  const { item, removeItem } = props;
   const [showing, setShowing] = useState<boolean>(item.show || true);
   const { theme } = useGlobalTheme();
 
