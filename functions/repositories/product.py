@@ -14,7 +14,7 @@ class ProductRepository:
         user_ref = self.db.collection("users").document(user_id)
         user = user_ref.get()
         if not user.exists:
-            raise NotFoundError("User not found")
+            return []
 
         conditions = [("belongs_to", "==", user_id)]
         order_by = [("name",)]
