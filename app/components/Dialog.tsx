@@ -1,7 +1,16 @@
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  Animated,
+  Easing,
+  Pressable,
+  StyleSheet,
+  Text,
+  ViewStyle,
+} from "react-native";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
+
+const DIALOG_SHOWING_TIME = 5000;
 
 export enum DialogRole {
   Danger = "danger",
@@ -16,6 +25,7 @@ export interface DialogItem {
   role?: DialogRole;
   show?: boolean;
 }
+
 interface DialogProps {
   item: DialogItem;
   removeItem: (item: DialogItem) => void;
@@ -25,7 +35,10 @@ interface DialogProps {
 const Dialog: React.FC<DialogProps> = (props) => {
   const { item, removeItem } = props;
   const [showing, setShowing] = useState<boolean>(item.show || true);
+  const [timer, setTimer] = useState<NodeJS.Timeout | undefined>();
   const { theme } = useGlobalTheme();
+  const [borderColor] = useState(new Animated.Value(0));
+  const [opacity] = useState(new Animated.Value(1));
 
   const backgroundVariant = (role: DialogRole) => {
     switch (role) {
@@ -57,6 +70,14 @@ const Dialog: React.FC<DialogProps> = (props) => {
     }
   };
 
+  const interpolatedBorderColor = borderColor.interpolate({
+    inputRange: [0, 1],
+    outputRange: [
+      onBackgroundVariant(item.role ?? DialogRole.Info),
+      "transparent",
+    ],
+  });
+
   const styles = StyleSheet.create({
     closeButton: {
       marginLeft: theme.spacing.sm,
@@ -64,19 +85,18 @@ const Dialog: React.FC<DialogProps> = (props) => {
     container: {
       backgroundColor: backgroundVariant(item.role ?? DialogRole.Info),
       borderRadius: theme.border.radius.light,
-      padding: theme.spacing.md,
-      flexDirection: "row",
-      justifyContent: "space-around",
-      alignItems: "center",
-      borderColor: onBackgroundVariant(item.role ?? DialogRole.Info),
       borderStyle: "solid",
       borderWidth: theme.border.width.thin,
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "space-around",
       marginTop: theme.spacing.sm,
+      padding: theme.spacing.md,
     },
     message: {
+      color: onBackgroundVariant(item.role ?? DialogRole.Info),
       fontSize: theme.typography.regular,
       fontWeight: "600",
-      color: onBackgroundVariant(item.role ?? DialogRole.Info),
       maxWidth: "90%",
     },
     submessage: {
@@ -93,15 +113,56 @@ const Dialog: React.FC<DialogProps> = (props) => {
     removeItem(item);
   };
 
+  const runAnimation = () => {
+    Animated.parallel([
+      Animated.timing(borderColor, {
+        toValue: 1,
+        duration: DIALOG_SHOWING_TIME,
+        easing: Easing.linear,
+        useNativeDriver: false,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        delay: DIALOG_SHOWING_TIME - 1500,
+        duration: 1500,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: false,
+      }),
+    ]).start();
+  };
+
+  useEffect(() => {
+    runAnimation();
+    const time = setTimeout(() => {
+      setShowing(false);
+    }, DIALOG_SHOWING_TIME);
+    setTimer(time);
+  }, []);
+
+  useEffect(() => {
+    if (!showing) {
+      clearTimeout(timer);
+      setTimer(undefined);
+    }
+  }, [showing]);
+
   return (
     <>
       {showing && (
-        <View style={styles.container}>
+        <Animated.View
+          style={[
+            styles.container,
+            {
+              borderColor: interpolatedBorderColor,
+              opacity: opacity,
+            },
+          ]}
+        >
           <Text style={styles.message}>{item.message}</Text>
           <Pressable onPress={closeDialog} style={styles.closeButton}>
             <Text style={styles.submessage}>Close</Text>
           </Pressable>
-        </View>
+        </Animated.View>
       )}
     </>
   );
