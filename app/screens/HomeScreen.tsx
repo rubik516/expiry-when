@@ -65,16 +65,13 @@ const HomeScreen: React.FC<
   const { addDialogItem } = useDialogManager();
 
   const fetchProducts = async () => {
-    if (!user) {
-      return;
-    }
-
     const response = await request("get_products_by_user");
     if (!response || !response.ok) {
       addDialogItem({
         message: "Retrieving products failed!",
         role: DialogRole.Danger,
       });
+      setLoading(false);
       return;
     }
 

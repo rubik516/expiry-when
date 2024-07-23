@@ -59,7 +59,11 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
         user_info = request.get_json()
         validated_user_info = validate_user(user_info)
         user = user_service.create_user(validated_user_info)
-        return https_fn.Response(f"Message with ID {user} added.", status=201)
+
+        headers = {"Content-Type": "application/json"}
+        response = {"message": "Success", "data": user.to_dict(), "status": 201}
+        json_response = json.dumps(response)
+        return https_fn.Response(json_response, headers=headers, status=201)
     except AlreadyExistsError as error:
         print(f"Error creating user: {error}")
         return https_fn.Response(f"User already exists", status=409)

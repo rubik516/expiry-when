@@ -12,7 +12,8 @@ class UserRepository:
             raise AlreadyExistsError("User already exists.")
 
         user_ref.set(user_info)
-        return user_ref
+        updated_user = user_ref.get()
+        return updated_user
 
     def get_user(self, user_id):
         user_ref = self.db.collection("users").document(user_id)

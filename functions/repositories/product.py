@@ -1,4 +1,4 @@
-from utils.exceptions import NotFoundError
+from utils.exceptions import UnauthorizedError
 from utils.get_resource import get_resource_from_db
 
 
@@ -14,7 +14,7 @@ class ProductRepository:
         user_ref = self.db.collection("users").document(user_id)
         user = user_ref.get()
         if not user.exists:
-            return []
+            raise UnauthorizedError("Missing Authorization header")
 
         conditions = [("belongs_to", "==", user_id)]
         order_by = [("name",)]
