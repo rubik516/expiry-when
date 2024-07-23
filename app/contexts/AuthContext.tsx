@@ -12,57 +12,52 @@ import { getFirebaseData } from "@/constants/firebase_config";
 import { useDialogManager } from "@/contexts/DialogManagerContext";
 import User from "@/types/user";
 import formatPayload from "@/utils/formatPayload";
+import formatResponse from "@/utils/formatResponse";
 import request from "@/utils/request";
 
 interface AuthContextProps {
   loading: boolean;
-  firebaseUser: User | undefined;
   user: User | undefined;
 }
 
-const WAIT_TIME_THRESHOLD = 10000; // wait for 10 seconds maximum to load initial data (user) from the server
+// maximum wait time of 10 seconds to load initial data (user) from the server
+const WAIT_TIME_THRESHOLD = 10000;
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [timer, setTimer] = useState<NodeJS.Timeout | undefined>(undefined);
-  const [user, setUser] = useState<User | undefined>(undefined);
-  const [firebaseUser, setFirebaseUser] = useState<User | undefined>();
+  const [user, setUser] = useState<User | undefined>();
   const { addDialogItem } = useDialogManager();
 
-  const createUser = async () => {
-    if (user) {
-      const userPayload = formatPayload(user);
-      const response = await request("create_user", {
-        method: "POST",
-        body: JSON.stringify(userPayload),
+  const createUser = async (user: User) => {
+    const userPayload = formatPayload(user);
+    const response = await request("create_user", {
+      method: "POST",
+      body: JSON.stringify(userPayload),
+    });
+    if (!response || !response.ok) {
+      addDialogItem({
+        message: "Creating new user failed!",
+        role: DialogRole.Danger,
       });
-      if (!response || !response.ok) {
-        addDialogItem({
-          message: "Creating new user failed!",
-          role: DialogRole.Danger,
-        });
-        return;
-      }
-
-      const createdUser = await response.json();
-      setFirebaseUser(createdUser);
+      return;
     }
+
+    const createdUser = formatResponse((await response.json()).data) as User;
+    setUser(createdUser);
   };
 
-  const getFirebaseUser = async () => {
-    if (!user) {
-      return undefined;
-    }
-
+  const getUser = async () => {
     try {
       const response = await request("get_user");
 
       if (response && response.ok) {
-        const json = await response.json();
-        const retrievedUser = json.data as User;
-        setFirebaseUser(retrievedUser);
+        const retrievedUser = formatResponse(
+          (await response.json()).data
+        ) as User;
+        setUser(retrievedUser);
         return retrievedUser;
       }
       return undefined;
@@ -82,46 +77,40 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (firebaseUser) {
+    if (user) {
       clearTimeout(timer);
       setTimer(undefined);
       setLoading(false);
     }
-  }, [firebaseUser]);
+  }, [user]);
 
   useEffect(() => {
-    async function createAnonymousUser() {
+    async function registerUser() {
       const { auth } = getFirebaseData();
       signInAnonymously(auth);
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
+      onAuthStateChanged(auth, async (anonymousUser) => {
+        const savedUser = await getUser();
+        if (savedUser) {
+          return;
+        }
+
+        if (anonymousUser) {
           const currentUser: User = {
-            createdAt: user["metadata"]["creationTime"],
-            isAnonymous: user["isAnonymous"],
-            lastLoginAt: user["metadata"]["lastSignInTime"],
-            uid: user["uid"],
+            createdAt: anonymousUser["metadata"]["creationTime"],
+            isAnonymous: anonymousUser["isAnonymous"],
+            lastLoginAt: anonymousUser["metadata"]["lastSignInTime"],
+            uid: anonymousUser["uid"],
           };
-          setUser(currentUser);
+          await createUser(currentUser);
         }
       });
     }
 
-    createAnonymousUser();
+    registerUser();
   }, []);
 
-  useEffect(() => {
-    async function createUserIfNotExisted() {
-      const savedUser = await getFirebaseUser();
-      if (!savedUser) {
-        await createUser();
-      }
-    }
-
-    createUserIfNotExisted();
-  }, [user]);
-
   return (
-    <AuthContext.Provider value={{ loading, user, firebaseUser }}>
+    <AuthContext.Provider value={{ loading, user }}>
       {children}
     </AuthContext.Provider>
   );

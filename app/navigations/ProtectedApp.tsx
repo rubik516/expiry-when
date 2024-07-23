@@ -7,7 +7,7 @@ import { useGlobalTheme } from "@/contexts/ThemeContext";
 import BottomTabs from "@/navigations/BottomTabs";
 
 export default function ProtectedApp() {
-  const { firebaseUser, loading } = useAuth();
+  const { user, loading } = useAuth();
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     container: {
@@ -42,7 +42,7 @@ export default function ProtectedApp() {
     );
   }
 
-  if (!firebaseUser) {
+  if (!user) {
     return (
       <View style={styles.container}>
         <Text>No user found</Text>
