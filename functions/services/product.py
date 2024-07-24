@@ -48,3 +48,17 @@ class ProductService:
         if updated_product.id:
             serialized_product["id"] = updated_product.id
         return serialized_product
+
+    def finish_today(self, product_id):
+        product_info = {
+            "is_active": False,
+            "finish_date": int(datetime.now(timezone.utc).timestamp() * 1000),
+            "updated_at": firestore.SERVER_TIMESTAMP,
+        }
+        updated_product = self.product_repo.update_product(product_id, product_info)
+
+        serialized_product = updated_product.to_dict()
+        serialized_product = self.__convert_timestamp(serialized_product)
+        if updated_product.id:
+            serialized_product["id"] = updated_product.id
+        return serialized_product

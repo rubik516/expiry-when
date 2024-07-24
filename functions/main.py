@@ -91,6 +91,38 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
 
 
 @https_fn.on_request()
+def finish_product_today(request: https_fn.Request) -> https_fn.Response:
+    if request.method.upper() != RequestMethod.PATCH.value:
+        return https_fn.Response("Method Not Allowed", status=405)
+
+    try:
+        user_id = validate_request(request)
+        validate_authorization(user_id)
+
+        product_id = request.get_json()["product_id"]
+        if not product_id:
+            raise BadRequestError("Invalid request: missing product_id in body")
+
+        product = product_service.finish_today(product_id)
+        headers = {"Content-Type": "application/json"}
+        response = {"message": "Success", "data": product, "status": 200}
+        json_response = json.dumps(response)
+        return https_fn.Response(json_response, headers=headers, status=200)
+    except BadRequestError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Bad request", status=400)
+    except ForbiddenError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Forbidden", status=403)
+    except NotFoundError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Product does not exist", status=404)
+    except UnauthorizedError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Unauthorized", status=401)
+
+
+@https_fn.on_request()
 def get_products_by_user(request: https_fn.Request) -> https_fn.Response:
     if request.method.upper() != RequestMethod.GET.value:
         return https_fn.Response("Method Not Allowed", status=405)
@@ -169,6 +201,9 @@ def start_product_today(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error updating product: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except NotFoundError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Product does not exist", status=404)
     except UnauthorizedError as error:
         print(f"Error updating product: {error}")
         return https_fn.Response("Unauthorized", status=401)

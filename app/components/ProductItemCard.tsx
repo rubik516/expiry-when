@@ -6,6 +6,7 @@ import { useDialogManager } from "@/contexts/DialogManagerContext";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import Product from "@/types/product";
 import {
+  formatDuration,
   getMonthDDYYYY,
   getMonthDDYYYYFromSimpleDate,
 } from "@/utils/formatDate";
@@ -66,6 +67,32 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
   });
   const { addDialogItem } = useDialogManager();
 
+  const finishProduct = async () => {
+    const productPayload = formatPayload({
+      productId: product.id,
+    });
+    const response = await request("finish_product_today", {
+      method: "PATCH",
+      body: JSON.stringify(productPayload),
+    });
+    if (response && !response.ok) {
+      addDialogItem({
+        message: "Updating product failed!",
+        role: DialogRole.Danger,
+      });
+      return;
+    }
+
+    const updatedProduct = formatResponse(
+      (await response?.json()).data
+    ) as Product;
+    onUpdate(updatedProduct);
+    addDialogItem({
+      message: "Successfully updated product.",
+      role: DialogRole.Success,
+    });
+  };
+
   const startProduct = async () => {
     const productPayload = formatPayload({
       productId: product.id,
@@ -115,13 +142,19 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
           <Text style={styles.text}>
             Used Within: {product.usedWithin} months
           </Text>
+          {!product.isActive && product.openDate && product.finishDate && (
+            <Text style={styles.text}>
+              Usage duration:{" "}
+              {formatDuration(product.openDate, product.finishDate)}
+            </Text>
+          )}
           {!!product.totalUses && (
             <Text style={styles.text}>Total Uses: {product.totalUses}</Text>
           )}
         </View>
         {product.isActive && (
           <Button
-            onPress={() => console.log("Finish today")}
+            onPress={finishProduct}
             label="Finish"
             variant={Variant.Secondary}
             viewStyles={[styles.smallMarginLeft, styles.alignSelfStart]}
