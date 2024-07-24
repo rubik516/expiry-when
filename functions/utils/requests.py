@@ -2,6 +2,7 @@ from firebase_functions import https_fn
 from firebase_admin import auth
 
 from utils.exceptions import ForbiddenError, UnauthorizedError
+from utils.firebase import FirebaseInstance
 
 
 def verify_id_token(id_token):
@@ -25,3 +26,12 @@ def validate_request(request: https_fn.Request):
     if not user_id:
         raise ForbiddenError()
     return user_id
+
+
+def validate_authorization(user_id):
+    firebase_app = FirebaseInstance()
+    db = firebase_app.get_db()
+    user_ref = db.collection("users").document(user_id)
+    user = user_ref.get()
+    if not user.exists:
+        raise UnauthorizedError("Missing Authorization header")

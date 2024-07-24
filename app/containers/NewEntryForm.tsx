@@ -113,10 +113,6 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       body: JSON.stringify(productPayload),
     });
     if (response && !response.ok) {
-      addDialogItem({
-        message: "Creating new product failed!",
-        role: DialogRole.Danger,
-      });
       return false;
     }
     return true;

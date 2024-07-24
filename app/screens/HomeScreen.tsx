@@ -64,6 +64,28 @@ const HomeScreen: React.FC<
   const [loading, setLoading] = useState<boolean>(true);
   const { addDialogItem } = useDialogManager();
 
+  const activeProducts = products.filter((product) => product.isActive);
+  const inactiveProducts = products.filter(
+    (product) => !product.isActive && product.finishDate
+  );
+  const futureProducts = products.filter(
+    (product) => !product.isActive && !product.openDate
+  );
+  const sections = [
+    {
+      title: "Currently using",
+      data: activeProducts,
+    },
+    {
+      title: "Saved for future",
+      data: futureProducts,
+    },
+    {
+      title: "Previously used",
+      data: inactiveProducts,
+    },
+  ];
+
   const fetchProducts = async () => {
     const response = await request("get_products_by_user");
     if (!response || !response.ok) {
@@ -88,30 +110,16 @@ const HomeScreen: React.FC<
       });
   };
 
-  const activeProducts = products.filter((product) => product.isActive);
-  const inactiveProducts = products.filter(
-    (product) => !product.isActive && product.finishDate
-  );
-  const futureProducts = products.filter(
-    (product) => !product.isActive && !product.openDate
-  );
-  const sections = [
-    {
-      title: "Currently using",
-      data: activeProducts,
-    },
-    {
-      title: "Saved for future",
-      data: futureProducts,
-    },
-    {
-      title: "Previously used",
-      data: inactiveProducts,
-    },
-  ];
-
   const goToNewEntry = () => {
     navigation.navigate(RouteName.NewEntry);
+  };
+
+  const onProductUpdate = (updatedProduct: Product) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      )
+    );
   };
 
   useFocusEffect(
@@ -128,6 +136,7 @@ const HomeScreen: React.FC<
           renderItem={({ item }) => (
             <ProductItemCard
               key={item.id}
+              onUpdate={onProductUpdate}
               product={item}
               style={styles.itemCard}
             />

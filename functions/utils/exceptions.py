@@ -4,10 +4,17 @@ class AlreadyExistsError(Exception):
         super().__init__(self.message)
 
 
+class BadRequestError(Exception):
+    def __init__(self, message="Malformed or invalid request."):
+        self.message = f"{message}"
+        super().__init__(self.message)
+
+
 class ForbiddenError(Exception):
     def __init__(self, message="Forbidden to access resource."):
         self.message = f"{message}"
         super().__init__(self.message)
+
 
 class InternalServerError(Exception):
     def __init__(self, message="Internal Server Error."):

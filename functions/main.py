@@ -43,7 +43,7 @@ def create_product(request: https_fn.Request) -> https_fn.Response:
         validated_product_info = validate_product(product_info)
         validated_product_info["belongs_to"] = user_id
         product = product_service.create_product(validated_product_info)
-        return https_fn.Response(f"Message with ID {product} added.", status=201)
+        return https_fn.Response(f"Product with ID {product.id} added.", status=201)
     except ForbiddenError as error:
         print(f"Error creating product: {error}")
         return https_fn.Response("Forbidden", status=403)
@@ -61,7 +61,7 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
         user = user_service.create_user(validated_user_info)
 
         headers = {"Content-Type": "application/json"}
-        response = {"message": "Success", "data": user.to_dict(), "status": 201}
+        response = {"message": "Success", "data": user, "status": 201}
         json_response = json.dumps(response)
         return https_fn.Response(json_response, headers=headers, status=201)
     except AlreadyExistsError as error:
@@ -106,7 +106,7 @@ def get_user(request: https_fn.Request) -> https_fn.Response:
         user = user_service.get_user(user_id)
 
         headers = {"Content-Type": "application/json"}
-        response = {"message": "Success", "data": user.to_dict(), "status": 200}
+        response = {"message": "Success", "data": user, "status": 200}
         json_response = json.dumps(response)
         return https_fn.Response(json_response, headers=headers, status=200)
     except ForbiddenError as error:
@@ -121,3 +121,27 @@ def get_user(request: https_fn.Request) -> https_fn.Response:
     except Exception as error:
         print(f"Error: {error}")
         return https_fn.Response("Internal Server Error", status=500)
+
+
+@https_fn.on_request()
+def start_product_today(request: https_fn.Request) -> https_fn.Response:
+    try:
+        user_id = validate_request(request)
+        product_id = request.get_json()["product_id"]
+        if not product_id:
+            raise BadRequestError("Invalid request: missing product_id in body")
+
+        product = product_service.start_today(user_id, product_id)
+        headers = {"Content-Type": "application/json"}
+        response = {"message": "Success", "data": product, "status": 200}
+        json_response = json.dumps(response)
+        return https_fn.Response(json_response, headers=headers, status=200)
+    except BadRequestError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Bad request", status=400)
+    except ForbiddenError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Forbidden", status=403)
+    except UnauthorizedError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Unauthorized", status=405)

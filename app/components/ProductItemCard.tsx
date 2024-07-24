@@ -1,19 +1,26 @@
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 
 import Button, { Variant } from "@/components/Button";
+import { DialogRole } from "@/components/Dialog";
+import { useDialogManager } from "@/contexts/DialogManagerContext";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import Product from "@/types/product";
 import {
   getMonthDDYYYY,
   getMonthDDYYYYFromSimpleDate,
 } from "@/utils/formatDate";
+import formatPayload from "@/utils/formatPayload";
+import formatResponse from "@/utils/formatResponse";
+import request from "@/utils/request";
 
 interface ProductItemCardProps {
+  onUpdate: (product: Product) => void;
   product: Product;
   style?: ViewStyle;
 }
 
 const ProductItemCard: React.FC<ProductItemCardProps> = ({
+  onUpdate,
   product,
   style,
 }) => {
@@ -57,6 +64,33 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       fontSize: theme.typography.regular,
     },
   });
+  const { addDialogItem } = useDialogManager();
+
+  const startProduct = async () => {
+    const productPayload = formatPayload({
+      productId: product.id,
+    });
+    const response = await request("start_product_today", {
+      method: "PATCH",
+      body: JSON.stringify(productPayload),
+    });
+    if (response && !response.ok) {
+      addDialogItem({
+        message: "Updating product failed!",
+        role: DialogRole.Danger,
+      });
+      return;
+    }
+
+    const updatedProduct = formatResponse(
+      (await response?.json()).data
+    ) as Product;
+    onUpdate(updatedProduct);
+    addDialogItem({
+      message: "Successfully updated product.",
+      role: DialogRole.Success,
+    });
+  };
 
   return (
     <View style={[styles.cardContainer, style]}>
@@ -81,7 +115,9 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
           <Text style={styles.text}>
             Used Within: {product.usedWithin} months
           </Text>
-          <Text style={styles.text}>Total Uses: {product.totalUses}</Text>
+          {!!product.totalUses && (
+            <Text style={styles.text}>Total Uses: {product.totalUses}</Text>
+          )}
         </View>
         {product.isActive && (
           <Button
@@ -110,7 +146,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       )}
       {!product.isActive && !product.openDate && (
         <Button
-          onPress={() => console.log("Start using")}
+          onPress={startProduct}
           label="Start usage"
           viewStyles={[styles.button, styles.mediumMarginTop]}
         />
