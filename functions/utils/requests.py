@@ -34,4 +34,4 @@ def validate_authorization(user_id):
     user_ref = db.collection("users").document(user_id)
     user = user_ref.get()
     if not user.exists:
-        raise UnauthorizedError("Missing Authorization header")
+        raise UnauthorizedError("Missing required authorization.")

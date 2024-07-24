@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from firebase_admin import firestore
 from repositories.product import ProductRepository
-from utils.requests import validate_authorization
 
 
 class ProductService:
@@ -29,15 +28,11 @@ class ProductService:
         return self.product_repo.create_product(product_info)
 
     def get_products_by_user(self, user_id):
-        validate_authorization(user_id)
-
         products = self.product_repo.get_products_by_user(user_id)
         converted_products = list(map(self.__convert_timestamp, products))
         return converted_products
 
-    def start_today(self, user_id, product_id):
-        validate_authorization(user_id)
-
+    def start_today(self, product_id):
         product_info = {
             "is_active": True,
             "open_date": int(datetime.now(timezone.utc).timestamp() * 1000),
