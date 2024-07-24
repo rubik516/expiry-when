@@ -66,6 +66,9 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
     try:
         validate_request(request)
         user_info = request.get_json()
+        if "uid" not in user_info or "is_anonymous" not in user_info:
+            raise BadRequestError("Invalid request: missing required params in body")
+
         validated_user_info = validate_user(user_info)
         user = user_service.create_user(validated_user_info)
 
@@ -76,6 +79,9 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
     except AlreadyExistsError as error:
         print(f"Error creating user: {error}")
         return https_fn.Response(f"User already exists", status=409)
+    except BadRequestError as error:
+        print(f"Error creating user: {error}")
+        return https_fn.Response("Bad request", status=400)
     except ForbiddenError as error:
         print(f"Error creating user: {error}")
         return https_fn.Response("Forbidden", status=403)
