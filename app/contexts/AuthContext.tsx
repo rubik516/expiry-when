@@ -69,6 +69,16 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     }
   };
 
+  const updateLastLogin = async () => {
+    const response = await request("update_user_last_login", {
+      method: "PATCH",
+    });
+    if (response && response.ok) {
+      const updatedUser = formatResponse((await response.json()).data) as User;
+      setUser(updatedUser);
+    }
+  };
+
   useEffect(() => {
     const loadingTimer = setTimeout(() => {
       setLoading(false);
@@ -91,6 +101,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       onAuthStateChanged(auth, async (anonymousUser) => {
         const savedUser = await getUser();
         if (savedUser) {
+          await updateLastLogin();
           return;
         }
 

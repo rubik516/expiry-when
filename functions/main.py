@@ -70,7 +70,7 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
             raise BadRequestError("Missing required params in body")
 
         validated_user_info = validate_user(user_info)
-        user = user_service.create_user(validated_user_info)
+        user = user_service.create(validated_user_info)
 
         headers = {"Content-Type": "application/json"}
         response = {"message": "Success", "data": user, "status": 201}
@@ -188,7 +188,7 @@ def get_user(request: https_fn.Request) -> https_fn.Response:
 
     try:
         user_id = validate_request(request)
-        user = user_service.get_user(user_id)
+        user = user_service.get(user_id)
 
         headers = {"Content-Type": "application/json"}
         response = {"message": "Success", "data": user, "status": 200}
@@ -237,4 +237,26 @@ def start_product_today(request: https_fn.Request) -> https_fn.Response:
         return https_fn.Response("Product does not exist", status=404)
     except UnauthorizedError as error:
         print(f"Error updating product: {error}")
+        return https_fn.Response("Unauthorized", status=401)
+
+
+@https_fn.on_request()
+def update_user_last_login(request: https_fn.Request) -> https_fn.Response:
+    if request.method.upper() != RequestMethod.PATCH.value:
+        return https_fn.Response("Method Not Allowed", status=405)
+
+    try:
+        user_id = validate_request(request)
+        validate_authorization(user_id)
+        user = user_service.update_last_login(user_id)
+
+        headers = {"Content-Type": "application/json"}
+        response = {"message": "Success", "data": user, "status": 200}
+        json_response = json.dumps(response)
+        return https_fn.Response(json_response, headers=headers, status=200)
+    except ForbiddenError as error:
+        print(f"Error updating user: {error}")
+        return https_fn.Response("Forbidden", status=403)
+    except UnauthorizedError as error:
+        print(f"Error updating user: {error}")
         return https_fn.Response("Unauthorized", status=401)

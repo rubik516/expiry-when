@@ -65,9 +65,20 @@ export function formatDuration(startDate: string, endDate: string) {
     .join(" ");
 }
 
+export function getHHMMSSMonthDDYYYY(timestamp: string) {
+  const date = new Date(Number(timestamp));
+  const hours = padWithZero(date.getHours());
+  const minutes = padWithZero(date.getMinutes());
+  const seconds = padWithZero(date.getSeconds());
+  const day = padWithZero(date.getDate());
+  const month = MONTHS[date.getMonth()];
+  const year = date.getFullYear();
+  return `${hours}:${minutes}:${seconds} on ${month} ${day}, ${year}`;
+}
+
 export function getMonthDDYYYY(timestamp: string) {
   const date = new Date(Number(timestamp));
-  const day = padDate(date.getDate());
+  const day = padWithZero(date.getDate());
   const month = MONTHS[date.getMonth()];
   const year = date.getFullYear();
   return `${month} ${day}, ${year}`;
@@ -87,7 +98,7 @@ export function getMonthDDYYYYFromSimpleDate(date: SimpleDate) {
     return `${month} ${year}`;
   }
 
-  const day = padDate(date.day);
+  const day = padWithZero(date.day);
   return `${month} ${day}, ${year}`;
 }
 
@@ -95,6 +106,6 @@ function formatPlurality(value: number, unit: string): string {
   return value >= 1 ? `${value} ${unit}${value > 1 ? "s" : ""}` : "";
 }
 
-const padDate = (date: number) => {
-  return date.toString().length == 2 ? date : `0${date}`;
+const padWithZero = (value: number) => {
+  return value.toString().length == 2 ? value : `0${value}`;
 };

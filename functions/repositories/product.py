@@ -26,12 +26,22 @@ class ProductRepository:
         )
         return products
 
-    def update(self, product_id, product_info):
+    def overwrite_properties(self, product_id, product_info):
         product_ref = self.db.collection("products").document(product_id)
         product = product_ref.get()
         if not product.exists:
             raise NotFoundError("Product not found")
 
-        product_ref.set(product_info, merge=True)
+        product_ref.update(product_info)
+        updated_product = product_ref.get()
+        return updated_product
+
+    def update(self, product_id, product_info, merge=True):
+        product_ref = self.db.collection("products").document(product_id)
+        product = product_ref.get()
+        if not product.exists:
+            raise NotFoundError("Product not found")
+
+        product_ref.set(product_info, merge=merge)
         updated_product = product_ref.get()
         return updated_product

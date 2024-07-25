@@ -18,6 +18,7 @@ import { useDialogManager } from "@/contexts/DialogManagerContext";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import RouteName, { RouteParamList } from "@/types/navigation";
 import Product from "@/types/product";
+import { getHHMMSSMonthDDYYYY } from "@/utils/formatDate";
 import formatResponse from "@/utils/formatResponse";
 import request from "@/utils/request";
 
@@ -29,6 +30,8 @@ const HomeScreen: React.FC<
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     container: {
+      flex: 1,
+      flexDirection: "column",
       position: "relative",
       minHeight: "100%",
       minWidth: "100%",
@@ -40,6 +43,11 @@ const HomeScreen: React.FC<
       fontSize: theme.typography.regular,
       marginTop: theme.spacing.md,
     },
+    footer: {
+      color: theme.color.onPrimary,
+      paddingVertical: theme.spacing.sm,
+      textAlign: "center",
+    },
     heading: {
       color: theme.color.onPrimary,
       fontWeight: "600",
@@ -48,6 +56,9 @@ const HomeScreen: React.FC<
     },
     itemCard: {
       marginTop: theme.spacing.md,
+    },
+    mediumBottomPadding: {
+      paddingBottom: theme.spacing.md,
     },
     spinnerContainer: {
       width: 80,
@@ -138,7 +149,8 @@ const HomeScreen: React.FC<
     <SafeAreaView>
       <View style={styles.container}>
         <SectionList
-          sections={sections}
+          contentContainerStyle={styles.mediumBottomPadding}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <ProductItemCard
               key={item.id}
@@ -164,13 +176,21 @@ const HomeScreen: React.FC<
               )
             ) : null
           }
+          sections={sections}
           stickySectionHeadersEnabled={false}
-          keyExtractor={(item) => item.id.toString()}
         />
+        {user && user.lastLoginAt && (
+          <Text style={styles.footer}>
+            Last login at:{" "}
+            {getHHMMSSMonthDDYYYY(
+              new Date(user.lastLoginAt).getTime().toString()
+            )}
+          </Text>
+        )}
+        <FloatingActionButton onPress={goToNewEntry}>
+          <Image source={require("@/assets/favicon.png")} />
+        </FloatingActionButton>
       </View>
-      <FloatingActionButton onPress={goToNewEntry}>
-        <Image source={require("@/assets/favicon.png")} />
-      </FloatingActionButton>
     </SafeAreaView>
   );
 };

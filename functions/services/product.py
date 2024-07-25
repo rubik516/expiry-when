@@ -56,9 +56,11 @@ class ProductService:
             "total_daytime_uses": 0,
             "total_nighttime_uses": 0,
             "total_uses": 0,
-            "updated_at": firestore.SERVER_TIMESTAMP,
         }
         updated_product = self.product_repo.update(product_id, product_info)
+        updated_product = self.product_repo.overwrite_properties(
+            product_id, {"updated_at": firestore.SERVER_TIMESTAMP}
+        )
 
         serialized_product = updated_product.to_dict()
         serialized_product = self.__convert_timestamp(serialized_product)
