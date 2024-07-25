@@ -18,6 +18,13 @@ class ProductRepository:
 
         product_ref.delete()
 
+    def get(self, product_id):
+        product_ref = self.db.collection("products").document(product_id)
+        product = product_ref.get()
+        if not product.exists:
+            raise NotFoundError("Product not found")
+        return product
+
     def get_all_by_user(self, user_id):
         conditions = [("belongs_to", "==", user_id)]
         order_by = [("name",)]

@@ -103,7 +103,7 @@ def delete_product(request: https_fn.Request) -> https_fn.Response:
         if not product_id:
             raise BadRequestError("Missing product_id in body")
 
-        product_service.delete(product_id)
+        product_service.delete(product_id, user_id)
         return https_fn.Response(
             f"Product with ID {product_id} successfully deleted.", status=204
         )
@@ -134,7 +134,7 @@ def finish_product_today(request: https_fn.Request) -> https_fn.Response:
         if not product_id:
             raise BadRequestError("Missing product_id in body")
 
-        product = product_service.finish_today(product_id)
+        product = product_service.finish_today(product_id, user_id)
         headers = {"Content-Type": "application/json"}
         response = {"message": "Success", "data": product, "status": 200}
         json_response = json.dumps(response)
@@ -221,7 +221,7 @@ def start_product_today(request: https_fn.Request) -> https_fn.Response:
         if not product_id:
             raise BadRequestError("Missing product_id in body")
 
-        product = product_service.start_today(product_id)
+        product = product_service.start_today(product_id, user_id)
         headers = {"Content-Type": "application/json"}
         response = {"message": "Success", "data": product, "status": 200}
         json_response = json.dumps(response)
