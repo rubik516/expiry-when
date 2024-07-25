@@ -48,7 +48,7 @@ def create_product(request: https_fn.Request) -> https_fn.Response:
         product_info = request.get_json()
         validated_product_info = validate_product(product_info)
         validated_product_info["belongs_to"] = user_id
-        product = product_service.create_product(validated_product_info)
+        product = product_service.create(validated_product_info)
         return https_fn.Response(f"Product with ID {product.id} added.", status=201)
     except ForbiddenError as error:
         print(f"Error creating product: {error}")
@@ -67,7 +67,7 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
         validate_request(request)
         user_info = request.get_json()
         if "uid" not in user_info or "is_anonymous" not in user_info:
-            raise BadRequestError("Invalid request: missing required params in body")
+            raise BadRequestError("Missing required params in body")
 
         validated_user_info = validate_user(user_info)
         user = user_service.create_user(validated_user_info)
@@ -81,12 +81,43 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
         return https_fn.Response(f"User already exists", status=409)
     except BadRequestError as error:
         print(f"Error creating user: {error}")
-        return https_fn.Response("Bad request", status=400)
+        return https_fn.Response(f"Bad request: {error}", status=400)
     except ForbiddenError as error:
         print(f"Error creating user: {error}")
         return https_fn.Response("Forbidden", status=403)
     except UnauthorizedError as error:
         print(f"Error creating user: {error}")
+        return https_fn.Response("Unauthorized", status=401)
+
+
+@https_fn.on_request()
+def delete_product(request: https_fn.Request) -> https_fn.Response:
+    if request.method.upper() != RequestMethod.DELETE.value:
+        return https_fn.Response("Method Not Allowed", status=405)
+
+    try:
+        user_id = validate_request(request)
+        validate_authorization(user_id)
+
+        product_id = request.get_json()["product_id"]
+        if not product_id:
+            raise BadRequestError("Missing product_id in body")
+
+        product_service.delete(product_id)
+        return https_fn.Response(
+            f"Product with ID {product_id} successfully deleted.", status=204
+        )
+    except BadRequestError as error:
+        print(f"Error deleting product: {error}")
+        return https_fn.Response(f"Bad request: {error}", status=400)
+    except ForbiddenError as error:
+        print(f"Error deleting product: {error}")
+        return https_fn.Response("Forbidden", status=403)
+    except NotFoundError as error:
+        print(f"Error deleting product: {error}")
+        return https_fn.Response("Product does not exist", status=404)
+    except UnauthorizedError as error:
+        print(f"Error deleting product: {error}")
         return https_fn.Response("Unauthorized", status=401)
 
 
@@ -101,7 +132,7 @@ def finish_product_today(request: https_fn.Request) -> https_fn.Response:
 
         product_id = request.get_json()["product_id"]
         if not product_id:
-            raise BadRequestError("Invalid request: missing product_id in body")
+            raise BadRequestError("Missing product_id in body")
 
         product = product_service.finish_today(product_id)
         headers = {"Content-Type": "application/json"}
@@ -110,7 +141,7 @@ def finish_product_today(request: https_fn.Request) -> https_fn.Response:
         return https_fn.Response(json_response, headers=headers, status=200)
     except BadRequestError as error:
         print(f"Error updating product: {error}")
-        return https_fn.Response("Bad request", status=400)
+        return https_fn.Response(f"Bad request: {error}", status=400)
     except ForbiddenError as error:
         print(f"Error updating product: {error}")
         return https_fn.Response("Forbidden", status=403)
@@ -130,7 +161,7 @@ def get_products_by_user(request: https_fn.Request) -> https_fn.Response:
     try:
         user_id = validate_request(request)
         validate_authorization(user_id)
-        products = product_service.get_products_by_user(user_id)
+        products = product_service.get_all_by_user(user_id)
 
         headers = {"Content-Type": "application/json"}
         response = {"message": "Success", "data": products, "status": 200}
@@ -188,7 +219,7 @@ def start_product_today(request: https_fn.Request) -> https_fn.Response:
 
         product_id = request.get_json()["product_id"]
         if not product_id:
-            raise BadRequestError("Invalid request: missing product_id in body")
+            raise BadRequestError("Missing product_id in body")
 
         product = product_service.start_today(product_id)
         headers = {"Content-Type": "application/json"}
@@ -197,7 +228,7 @@ def start_product_today(request: https_fn.Request) -> https_fn.Response:
         return https_fn.Response(json_response, headers=headers, status=200)
     except BadRequestError as error:
         print(f"Error updating product: {error}")
-        return https_fn.Response("Bad request", status=400)
+        return https_fn.Response(f"Bad request: {error}", status=400)
     except ForbiddenError as error:
         print(f"Error updating product: {error}")
         return https_fn.Response("Forbidden", status=403)

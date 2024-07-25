@@ -22,13 +22,30 @@ class ProductService:
             ),
         }
 
-    def create_product(self, product_info):
+    def create(self, product_info):
         product_info["created_at"] = firestore.SERVER_TIMESTAMP
         product_info["updated_at"] = firestore.SERVER_TIMESTAMP
-        return self.product_repo.create_product(product_info)
+        return self.product_repo.create(product_info)
 
-    def get_products_by_user(self, user_id):
-        products = self.product_repo.get_products_by_user(user_id)
+    def delete(self, product_id):
+        return self.product_repo.delete(product_id)
+
+    def finish_today(self, product_id):
+        product_info = {
+            "is_active": False,
+            "finish_date": int(datetime.now(timezone.utc).timestamp() * 1000),
+            "updated_at": firestore.SERVER_TIMESTAMP,
+        }
+        updated_product = self.product_repo.update(product_id, product_info)
+
+        serialized_product = updated_product.to_dict()
+        serialized_product = self.__convert_timestamp(serialized_product)
+        if updated_product.id:
+            serialized_product["id"] = updated_product.id
+        return serialized_product
+
+    def get_all_by_user(self, user_id):
+        products = self.product_repo.get_all_by_user(user_id)
         converted_products = list(map(self.__convert_timestamp, products))
         return converted_products
 
@@ -41,21 +58,7 @@ class ProductService:
             "total_uses": 0,
             "updated_at": firestore.SERVER_TIMESTAMP,
         }
-        updated_product = self.product_repo.update_product(product_id, product_info)
-
-        serialized_product = updated_product.to_dict()
-        serialized_product = self.__convert_timestamp(serialized_product)
-        if updated_product.id:
-            serialized_product["id"] = updated_product.id
-        return serialized_product
-
-    def finish_today(self, product_id):
-        product_info = {
-            "is_active": False,
-            "finish_date": int(datetime.now(timezone.utc).timestamp() * 1000),
-            "updated_at": firestore.SERVER_TIMESTAMP,
-        }
-        updated_product = self.product_repo.update_product(product_id, product_info)
+        updated_product = self.product_repo.update(product_id, product_info)
 
         serialized_product = updated_product.to_dict()
         serialized_product = self.__convert_timestamp(serialized_product)

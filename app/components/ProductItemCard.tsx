@@ -15,12 +15,14 @@ import formatResponse from "@/utils/formatResponse";
 import request from "@/utils/request";
 
 interface ProductItemCardProps {
+  onDelete: (product: Product) => void;
   onUpdate: (product: Product) => void;
   product: Product;
   style?: ViewStyle;
 }
 
 const ProductItemCard: React.FC<ProductItemCardProps> = ({
+  onDelete,
   onUpdate,
   product,
   style,
@@ -66,6 +68,29 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
     },
   });
   const { addDialogItem } = useDialogManager();
+
+  const deleteProduct = async () => {
+    const productPayload = formatPayload({
+      productId: product.id,
+    });
+    const response = await request("delete_product", {
+      method: "DELETE",
+      body: JSON.stringify(productPayload),
+    });
+    if (response && !response.ok) {
+      addDialogItem({
+        message: "Deleting product failed!",
+        role: DialogRole.Danger,
+      });
+      return;
+    }
+
+    onDelete(product);
+    addDialogItem({
+      message: "Successfully deleted product.",
+      role: DialogRole.Success,
+    });
+  };
 
   const finishProduct = async () => {
     const productPayload = formatPayload({
@@ -152,6 +177,47 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
             <Text style={styles.text}>Total Uses: {product.totalUses}</Text>
           )}
         </View>
+        {!product.isActive && product.finishDate && (
+          <Button
+            onPress={deleteProduct}
+            label="Delete"
+            variant={Variant.Secondary}
+            viewStyles={[styles.alignSelfStart]}
+          />
+        )}
+      </View>
+      <View style={[styles.buttonGroup, styles.mediumMarginTop]}>
+        {product.isActive && (
+          <>
+            <View style={styles.buttonGroup}>
+              <Button
+                onPress={() => console.log("Use daytime")}
+                label="Day"
+                viewStyles={[styles.button, styles.smallMarginRight]}
+              />
+              <Button
+                onPress={() => console.log("Use nighttime")}
+                label="Night"
+                viewStyles={[styles.button]}
+              />
+            </View>
+          </>
+        )}
+        {!product.isActive && !product.openDate && (
+          <Button
+            onPress={startProduct}
+            label="Start usage"
+            viewStyles={[styles.button]}
+          />
+        )}
+        {(product.isActive || (!product.isActive && !product.openDate)) && (
+          <Button
+            onPress={deleteProduct}
+            label="Delete"
+            variant={Variant.Secondary}
+            viewStyles={[styles.smallMarginLeft, styles.alignSelfStart]}
+          />
+        )}
         {product.isActive && (
           <Button
             onPress={finishProduct}
@@ -161,29 +227,6 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
           />
         )}
       </View>
-      {product.isActive && (
-        <>
-          <View style={[styles.buttonGroup, styles.mediumMarginTop]}>
-            <Button
-              onPress={() => console.log("Use daytime")}
-              label="Use daytime"
-              viewStyles={[styles.button, styles.smallMarginRight]}
-            />
-            <Button
-              onPress={() => console.log("Use nighttime")}
-              label="Use nighttime"
-              viewStyles={[styles.button]}
-            />
-          </View>
-        </>
-      )}
-      {!product.isActive && !product.openDate && (
-        <Button
-          onPress={startProduct}
-          label="Start usage"
-          viewStyles={[styles.button, styles.mediumMarginTop]}
-        />
-      )}
     </View>
   );
 };

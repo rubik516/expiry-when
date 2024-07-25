@@ -114,6 +114,12 @@ const HomeScreen: React.FC<
     navigation.navigate(RouteName.NewEntry);
   };
 
+  const onProductDelete = (deletedProduct: Product) => {
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product.id !== deletedProduct.id)
+    );
+  };
+
   const onProductUpdate = (updatedProduct: Product) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
@@ -136,6 +142,7 @@ const HomeScreen: React.FC<
           renderItem={({ item }) => (
             <ProductItemCard
               key={item.id}
+              onDelete={onProductDelete}
               onUpdate={onProductUpdate}
               product={item}
               style={styles.itemCard}

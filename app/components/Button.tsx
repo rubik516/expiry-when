@@ -28,7 +28,7 @@ const Button: React.FC<ButtonProps> = ({
       flex: 0,
       justifyContent: "center",
       padding: theme.spacing.md,
-      paddingHorizontal: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.md,
       shadowColor: theme.shadow.shadowColor,
       shadowOffset: theme.shadow.shadowOffset,
       shadowOpacity: theme.shadow.shadowOpacity,

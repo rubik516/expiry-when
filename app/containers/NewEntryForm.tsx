@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Button, Text, View, ViewStyle } from "react-native";
+import { StyleSheet, Text, View, ViewStyle } from "react-native";
 
+import Button, { Variant } from "@/components/Button";
 import CheckboxInput from "@/components/CheckboxInput";
 import DatePickerField from "@/components/DatePickerField";
 import { DialogRole } from "@/components/Dialog";
@@ -394,7 +395,11 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
           />
         </>
       )}
-      <Button onPress={submitEntry} title="Add new entry" />
+      <Button
+        onPress={submitEntry}
+        label="Add new entry"
+        variant={Variant.Primary}
+      />
     </>
   );
 };
