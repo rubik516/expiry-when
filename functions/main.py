@@ -38,12 +38,11 @@ product_service = ProductService(product_repo)
 
 @https_fn.on_request()
 def create_product(request: https_fn.Request) -> https_fn.Response:
-    if request.method.upper() != RequestMethod.POST.value:
-        return https_fn.Response("Method Not Allowed", status=405)
-
     try:
         user_id = validate_request(request)
         validate_authorization(user_id)
+        if request.method.upper() != RequestMethod.POST.value:
+            raise MethodNotAllowedError()
 
         product_info = request.get_json()
         validated_product_info = validate_product(product_info)
@@ -53,6 +52,9 @@ def create_product(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error creating product: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except MethodNotAllowedError as error:
+        print(f"Error creating product: {error}")
+        return https_fn.Response("Method Not Allowed", status=405)
     except UnauthorizedError as error:
         print(f"Error creating product: {error}")
         return https_fn.Response("Unauthorized", status=401)
@@ -60,11 +62,11 @@ def create_product(request: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def create_user(request: https_fn.Request) -> https_fn.Response:
-    if request.method.upper() != RequestMethod.POST.value:
-        return https_fn.Response("Method Not Allowed", status=405)
-
     try:
         validate_request(request)
+        if request.method.upper() != RequestMethod.POST.value:
+            raise MethodNotAllowedError()
+
         user_info = request.get_json()
         if "uid" not in user_info or "is_anonymous" not in user_info:
             raise BadRequestError("Missing required params in body")
@@ -85,6 +87,9 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error creating user: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except MethodNotAllowedError as error:
+        print(f"Error creating user: {error}")
+        return https_fn.Response("Method Not Allowed", status=405)
     except UnauthorizedError as error:
         print(f"Error creating user: {error}")
         return https_fn.Response("Unauthorized", status=401)
@@ -92,12 +97,11 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def delete_product(request: https_fn.Request) -> https_fn.Response:
-    if request.method.upper() != RequestMethod.DELETE.value:
-        return https_fn.Response("Method Not Allowed", status=405)
-
     try:
         user_id = validate_request(request)
         validate_authorization(user_id)
+        if request.method.upper() != RequestMethod.DELETE.value:
+            raise MethodNotAllowedError()
 
         product_id = request.get_json()["product_id"]
         if not product_id:
@@ -113,6 +117,9 @@ def delete_product(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error deleting product: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except MethodNotAllowedError as error:
+        print(f"Error deleting product: {error}")
+        return https_fn.Response("Method Not Allowed", status=405)
     except NotFoundError as error:
         print(f"Error deleting product: {error}")
         return https_fn.Response("Product does not exist", status=404)
@@ -123,12 +130,11 @@ def delete_product(request: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def finish_product_today(request: https_fn.Request) -> https_fn.Response:
-    if request.method.upper() != RequestMethod.PATCH.value:
-        return https_fn.Response("Method Not Allowed", status=405)
-
     try:
         user_id = validate_request(request)
         validate_authorization(user_id)
+        if request.method.upper() != RequestMethod.PATCH.value:
+            raise MethodNotAllowedError()
 
         product_id = request.get_json()["product_id"]
         if not product_id:
@@ -145,6 +151,9 @@ def finish_product_today(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error updating product: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except MethodNotAllowedError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Method Not Allowed", status=405)
     except NotFoundError as error:
         print(f"Error updating product: {error}")
         return https_fn.Response("Product does not exist", status=404)
@@ -155,12 +164,12 @@ def finish_product_today(request: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def get_products_by_user(request: https_fn.Request) -> https_fn.Response:
-    if request.method.upper() != RequestMethod.GET.value:
-        return https_fn.Response("Method Not Allowed", status=405)
-
     try:
         user_id = validate_request(request)
         validate_authorization(user_id)
+        if request.method.upper() != RequestMethod.GET.value:
+            raise MethodNotAllowedError()
+
         products = product_service.get_all_by_user(user_id)
 
         headers = {"Content-Type": "application/json"}
@@ -170,6 +179,9 @@ def get_products_by_user(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error retrieving products for {user_id}: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except MethodNotAllowedError as error:
+        print(f"Error retrieving products for {user_id}: {error}")
+        return https_fn.Response("Method Not Allowed", status=405)
     except NotFoundError as error:
         print(f"Error retrieving products for {user_id}: {error}")
         return https_fn.Response("User does not exist", status=404)
@@ -183,11 +195,11 @@ def get_products_by_user(request: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def get_user(request: https_fn.Request) -> https_fn.Response:
-    if request.method.upper() != RequestMethod.GET.value:
-        return https_fn.Response("Method Not Allowed", status=405)
-
     try:
         user_id = validate_request(request)
+        if request.method.upper() != RequestMethod.GET.value:
+            raise MethodNotAllowedError()
+        
         user = user_service.get(user_id)
 
         headers = {"Content-Type": "application/json"}
@@ -197,6 +209,9 @@ def get_user(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error retrieving user: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except MethodNotAllowedError as error:
+        print(f"Error retrieving user: {error}")
+        return https_fn.Response("Method Not Allowed", status=405)
     except NotFoundError as error:
         print(f"Error retrieving user: {error}")
         return https_fn.Response("Not Found", status=404)
@@ -210,12 +225,11 @@ def get_user(request: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def start_product_today(request: https_fn.Request) -> https_fn.Response:
-    if request.method.upper() != RequestMethod.PATCH.value:
-        return https_fn.Response("Method Not Allowed", status=405)
-
     try:
         user_id = validate_request(request)
         validate_authorization(user_id)
+        if request.method.upper() != RequestMethod.PATCH.value:
+            raise MethodNotAllowedError()
 
         product_id = request.get_json()["product_id"]
         if not product_id:
@@ -232,6 +246,9 @@ def start_product_today(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error updating product: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except MethodNotAllowedError as error:
+        print(f"Error updating product: {error}")
+        return https_fn.Response("Method Not Allowed", status=405)
     except NotFoundError as error:
         print(f"Error updating product: {error}")
         return https_fn.Response("Product does not exist", status=404)
@@ -242,12 +259,12 @@ def start_product_today(request: https_fn.Request) -> https_fn.Response:
 
 @https_fn.on_request()
 def update_user_last_login(request: https_fn.Request) -> https_fn.Response:
-    if request.method.upper() != RequestMethod.PATCH.value:
-        return https_fn.Response("Method Not Allowed", status=405)
-
     try:
         user_id = validate_request(request)
         validate_authorization(user_id)
+        if request.method.upper() != RequestMethod.PATCH.value:
+            raise MethodNotAllowedError()
+
         user = user_service.update_last_login(user_id)
 
         headers = {"Content-Type": "application/json"}
@@ -257,6 +274,9 @@ def update_user_last_login(request: https_fn.Request) -> https_fn.Response:
     except ForbiddenError as error:
         print(f"Error updating user: {error}")
         return https_fn.Response("Forbidden", status=403)
+    except MethodNotAllowedError as error:
+        print(f"Error updating user: {error}")
+        return https_fn.Response("Method Not Allowed", status=405)
     except UnauthorizedError as error:
         print(f"Error updating user: {error}")
         return https_fn.Response("Unauthorized", status=401)

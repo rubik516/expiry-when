@@ -22,6 +22,12 @@ class InternalServerError(Exception):
         super().__init__(self.message)
 
 
+class MethodNotAllowedError(Exception):
+    def __init__(self, message="Method Not Allowed."):
+        self.message = f"{message}"
+        super().__init__(self.message)
+
+
 class NotFoundError(Exception):
     def __init__(self, message="Resource not found."):
         self.message = f"{message}"

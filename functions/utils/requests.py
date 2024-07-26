@@ -1,7 +1,7 @@
 from firebase_functions import https_fn
 from firebase_admin import auth
 
-from utils.exceptions import ForbiddenError, UnauthorizedError
+from utils.exceptions import UnauthorizedError
 from utils.firebase import FirebaseInstance
 
 
@@ -24,7 +24,7 @@ def validate_request(request: https_fn.Request):
     id_token = authorization_header.replace("Bearer", "").strip()
     user_id = verify_id_token(id_token)
     if not user_id:
-        raise ForbiddenError()
+        raise UnauthorizedError("Invalid credentials.")
     return user_id
 
 

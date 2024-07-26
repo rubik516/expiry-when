@@ -21,7 +21,7 @@ const request = async (endpoint: string, options: RequestOptions = {}) => {
       ...defaultHeaders,
       ...options.headers,
     },
-    method: options.method || "GET",
+    method: options.method ?? "GET",
   };
 
   const url = `${ROOT_URL}/${endpoint}`;
