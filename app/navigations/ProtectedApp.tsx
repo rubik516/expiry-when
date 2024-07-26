@@ -27,8 +27,8 @@ export default function ProtectedApp() {
       height: 200,
     },
     spinnerDot: {
-      width: 30,
-      height: 30,
+      width: theme.spinnerDot.lg,
+      height: theme.spinnerDot.lg,
     },
   });
 

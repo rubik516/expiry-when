@@ -45,6 +45,11 @@ const ThemeContext = createContext({
       md: 2 * BASE_UNIT,
       lg: 3 * BASE_UNIT,
     },
+    spinnerDot: {
+      lg: 30,
+      md: 15,
+      sm: 10,
+    },
     typography: {
       regular: REGULAR_FONT_SIZE,
       heading: 2 * REGULAR_FONT_SIZE,

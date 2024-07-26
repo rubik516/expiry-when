@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ViewStyle } from "react-native";
 import Button, { Variant } from "@/components/Button";
 import { DialogRole } from "@/components/Dialog";
 import { useDialogManager } from "@/contexts/DialogManagerContext";
+import { useLoading } from "@/contexts/LoadingContext";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import Product from "@/types/product";
 import {
@@ -27,6 +28,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
   product,
   style,
 }) => {
+  const { activateLoading, deactivateLoading } = useLoading();
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     alignSelfStart: {
@@ -73,6 +75,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
     const productPayload = formatPayload({
       productId: product.id,
     });
+    activateLoading();
     const response = await request("delete_product", {
       method: "DELETE",
       body: JSON.stringify(productPayload),
@@ -82,6 +85,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
         message: "Deleting product failed!",
         role: DialogRole.Danger,
       });
+      deactivateLoading();
       return;
     }
 
@@ -90,12 +94,14 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       message: "Successfully deleted product.",
       role: DialogRole.Success,
     });
+    deactivateLoading();
   };
 
   const finishProduct = async () => {
     const productPayload = formatPayload({
       productId: product.id,
     });
+    activateLoading();
     const response = await request("finish_product_today", {
       method: "PATCH",
       body: JSON.stringify(productPayload),
@@ -105,6 +111,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
         message: "Updating product failed!",
         role: DialogRole.Danger,
       });
+      deactivateLoading();
       return;
     }
 
@@ -116,12 +123,14 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       message: "Successfully updated product.",
       role: DialogRole.Success,
     });
+    deactivateLoading();
   };
 
   const startProduct = async () => {
     const productPayload = formatPayload({
       productId: product.id,
     });
+    activateLoading();
     const response = await request("start_product_today", {
       method: "PATCH",
       body: JSON.stringify(productPayload),
@@ -131,6 +140,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
         message: "Updating product failed!",
         role: DialogRole.Danger,
       });
+      deactivateLoading();
       return;
     }
 
@@ -142,6 +152,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       message: "Successfully updated product.",
       role: DialogRole.Success,
     });
+    deactivateLoading();
   };
 
   return (

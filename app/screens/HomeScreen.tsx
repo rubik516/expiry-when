@@ -65,8 +65,8 @@ const HomeScreen: React.FC<
       height: 80,
     },
     spinnerDot: {
-      width: 10,
-      height: 10,
+      width: theme.spinnerDot.sm,
+      height: theme.spinnerDot.sm,
     },
   });
 

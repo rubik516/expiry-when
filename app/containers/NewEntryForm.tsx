@@ -9,6 +9,7 @@ import ErrorText from "@/components/ErrorText";
 import InputField from "@/components/InputField";
 import SelectChip from "@/components/SelectChip";
 import { useDialogManager } from "@/contexts/DialogManagerContext";
+import { useLoading } from "@/contexts/LoadingContext";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import Product from "@/types/product";
 import { Field } from "@/utils/field";
@@ -25,6 +26,7 @@ interface NewEntryFormProps {
 const NewEntryForm: React.FC<NewEntryFormProps> = ({
   onSubmissionCompletion,
 }) => {
+  const { activateLoading, deactivateLoading } = useLoading();
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     field: {
@@ -109,10 +111,12 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
 
   const createProduct = async () => {
     const productPayload = constructProductPayload();
+    activateLoading();
     const response = await request("create_product", {
       method: "POST",
       body: JSON.stringify(productPayload),
     });
+
     if (response && !response.ok) {
       return false;
     }
@@ -129,6 +133,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
           message: "Success: New product has been created!",
           role: DialogRole.Success,
         });
+        deactivateLoading();
         onSubmissionCompletion?.();
         return;
       }
@@ -137,6 +142,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
           "Error occurred while attempting to save your product. Please try again!",
         role: DialogRole.Danger,
       });
+      deactivateLoading();
       return;
     }
 

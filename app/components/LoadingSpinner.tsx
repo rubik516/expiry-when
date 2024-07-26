@@ -28,8 +28,8 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ viewStyles = [] }) => {
   const dotDimension = spinnerDot
     ? spinnerDot
     : {
-        width: 15,
-        height: 15,
+        width: theme.spinnerDot.md,
+        height: theme.spinnerDot.md,
       };
 
   const dotTransform = (position: Animated.Value) => {

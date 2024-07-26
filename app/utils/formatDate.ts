@@ -52,6 +52,10 @@ export function formatDuration(startDate: string, endDate: string) {
   ).getTime();
 
   const daysBetween = (end - start) / ONE_DAY;
+  if (daysBetween === 0) {
+    return "0 days";
+  }
+
   const years = Math.floor(daysBetween / 365);
   const months = Math.floor((daysBetween % 365) / 30);
   const days = Math.floor((daysBetween % 365) % 30);
