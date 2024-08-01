@@ -1,0 +1,3 @@
+{
+  "./**/*.py": ["flake8 --exclude=venv", "black --line-length 80 ."]
+}
