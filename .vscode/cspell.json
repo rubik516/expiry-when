@@ -1,6 +1,13 @@
 {
   // words - list of words to be always considered correct
-  "words": ["MonthDDYYYY", "navigations", "Pressable"],
+  "words": [
+    "firestore",
+    "gcloud",
+    "MonthDDYYYY",
+    "navigations",
+    "Pressable",
+    "venv"
+  ],
   // flagWords - list of words to be always considered incorrect
   "flagWords": []
 }

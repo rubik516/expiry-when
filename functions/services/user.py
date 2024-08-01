@@ -7,7 +7,9 @@ class UserService:
         self.user_repo = user_repo
 
     def create(self, user_info):
-        # Firebase's anonymousUser["metadata"]["creationTime"] is a ISO 8601 string value, so isoformat() is used here for consistency with existing data
+        # Firebase's anonymousUser["metadata"]["creationTime"] is a
+        # ISO 8601 string value, so isoformat() is used here for
+        # consistency with existing data.
         # Resource: https://rnfirebase.io/reference/auth/usermetadata
         now = datetime.now().isoformat()
         if "created_at" not in user_info:

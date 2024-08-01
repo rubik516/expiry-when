@@ -1,14 +1,17 @@
 """
-From Cloud Functions docs: https://cloud.google.com/functions/docs/writing#directory-structure-python
+From Cloud Functions docs:
+https://cloud.google.com/functions/docs/writing#directory-structure-python
 
-"Cloud Functions loads source code from a file named main.py at the root of your function directory.
-Your main file must be named main.py. The code in your main.py file must define your function entry point
-and can import other code and external dependencies as normal.The main.py file can also define multiple
-function entry points that can be deployed separately."
+"Cloud Functions loads source code from a file named main.py at the root of
+your function directory. Your main file must be named main.py. The code in
+your main.py file must define your function entry point and can import other
+code and external dependencies as normal. The main.py file can also define
+multiple function entry points that can be deployed separately."
 
-Considering that the current project structure follows the service-oriented architecture with separate
-layers for repositories, services and controllers, this main.py file will act as the "controllers" layer,
-which exposes the APIs (cloud functions entry points) for the client(s) to interact with.
+Considering that the current project structure follows the service-oriented
+architecture with separate layers for repositories, services and controllers,
+this main.py file will act as the "controllers" layer, which exposes the APIs
+(cloud functions entry points) for the client(s) to interact with.
 """
 
 from firebase_functions import https_fn
@@ -18,7 +21,14 @@ from repositories.product import ProductRepository
 from repositories.user import UserRepository
 from services.product import ProductService
 from services.user import UserService
-from utils.exceptions import *
+from utils.exceptions import (
+    AlreadyExistsError,
+    BadRequestError,
+    ForbiddenError,
+    MethodNotAllowedError,
+    NotFoundError,
+    UnauthorizedError,
+)
 from utils.firebase import FirebaseInstance
 from utils.requests import validate_authorization, validate_request
 from utils.request_methods import RequestMethod
@@ -48,7 +58,9 @@ def create_product(request: https_fn.Request) -> https_fn.Response:
         validated_product_info = validate_product(product_info)
         validated_product_info["belongs_to"] = user_id
         product = product_service.create(validated_product_info)
-        return https_fn.Response(f"Product with ID {product.id} added.", status=201)
+        return https_fn.Response(
+            f"Product with ID {product.id} added.", status=201
+        )
     except ForbiddenError as error:
         print(f"Error creating product: {error}")
         return https_fn.Response("Forbidden", status=403)
@@ -80,7 +92,7 @@ def create_user(request: https_fn.Request) -> https_fn.Response:
         return https_fn.Response(json_response, headers=headers, status=201)
     except AlreadyExistsError as error:
         print(f"Error creating user: {error}")
-        return https_fn.Response(f"User already exists", status=409)
+        return https_fn.Response(f"User already exists: {error}", status=409)
     except BadRequestError as error:
         print(f"Error creating user: {error}")
         return https_fn.Response(f"Bad request: {error}", status=400)
@@ -199,7 +211,7 @@ def get_user(request: https_fn.Request) -> https_fn.Response:
         user_id = validate_request(request)
         if request.method.upper() != RequestMethod.GET.value:
             raise MethodNotAllowedError()
-        
+
         user = user_service.get(user_id)
 
         headers = {"Content-Type": "application/json"}

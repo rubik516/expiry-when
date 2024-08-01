@@ -1,5 +1,6 @@
 from firebase_admin import credentials, firestore, initialize_app
 
+
 class FirebaseInstance:
     _instance = None
 
@@ -10,9 +11,9 @@ class FirebaseInstance:
         return cls._instance
 
     def initialize(self):
-        service_account_file = 'gcloud_key.json'
+        service_account_file = "gcloud_key.json"
         cred = credentials.Certificate(service_account_file)
-        app = initialize_app(cred)
+        _ = initialize_app(cred)
         self.db = firestore.client()
 
     def get_db(self):
