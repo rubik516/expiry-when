@@ -11,7 +11,7 @@ const RouteName = {
   HomeStack: "HomeStack",
   Home: "Home",
   NewEntry: "NewEntry",
-  
+
   Analytics: "Analytics",
   Tracker: "Tracker",
 } as const;

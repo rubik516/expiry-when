@@ -180,7 +180,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
   };
 
   const validateInputs = () => {
-    let canSubmit = Object.values(fields).every((field) => field.isValid);
+    const canSubmit = Object.values(fields).every((field) => field.isValid);
     return canSubmit;
   };
 

@@ -21,13 +21,13 @@ const BottomNav: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
       color: theme.color.onPrimary,
     },
     navTextHighlight: {
-      fontWeight: "600"
-    }
+      fontWeight: "600",
+    },
   });
 
   const isRouteFocused = (route: string) => {
-    return state.routes[state.index].name === route
-  }
+    return state.routes[state.index].name === route;
+  };
 
   return (
     <SafeAreaView>
@@ -39,7 +39,9 @@ const BottomNav: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
           <Text
             style={[
               styles.navText,
-              isRouteFocused(RouteName.HomeStack) ? styles.navTextHighlight : null,
+              isRouteFocused(RouteName.HomeStack)
+                ? styles.navTextHighlight
+                : null,
             ]}
           >
             Home
@@ -52,7 +54,9 @@ const BottomNav: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
           <Text
             style={[
               styles.navText,
-              isRouteFocused(RouteName.Tracker) ? styles.navTextHighlight : null,
+              isRouteFocused(RouteName.Tracker)
+                ? styles.navTextHighlight
+                : null,
             ]}
           >
             Tracker
@@ -65,7 +69,9 @@ const BottomNav: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
           <Text
             style={[
               styles.navText,
-              isRouteFocused(RouteName.Analytics) ? styles.navTextHighlight : null,
+              isRouteFocused(RouteName.Analytics)
+                ? styles.navTextHighlight
+                : null,
             ]}
           >
             Analytics

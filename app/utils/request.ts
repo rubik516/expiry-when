@@ -1,9 +1,7 @@
 import { getFirebaseData } from "@/constants/firebase_config";
 import { ROOT_URL } from "@/environment";
 
-interface RequestOptions extends RequestInit {}
-
-const request = async (endpoint: string, options: RequestOptions = {}) => {
+const request = async (endpoint: string, options: RequestInit = {}) => {
   const { currentUser } = getFirebaseData();
   if (!currentUser) {
     return;

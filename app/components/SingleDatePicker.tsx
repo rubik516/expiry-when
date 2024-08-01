@@ -6,9 +6,11 @@ import { DatePickerModal } from "react-native-paper-dates";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 
+import type { SingleChange } from "@/types/datePicker";
+
 interface SingleDatePickerProps {
   date: Date;
-  onConfirm: (params: any) => void;
+  onConfirm: SingleChange;
   onDismiss: () => void;
   visible: boolean;
 }

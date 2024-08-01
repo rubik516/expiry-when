@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-
+import favicon from "@/assets/favicon.png";
 import { DialogRole } from "@/components/Dialog";
 import FloatingActionButton from "@/components/FloatingActionButton";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -188,7 +188,7 @@ const HomeScreen: React.FC<
           </Text>
         )}
         <FloatingActionButton onPress={goToNewEntry}>
-          <Image source={require("@/assets/favicon.png")} />
+          <Image source={favicon} />
         </FloatingActionButton>
       </View>
     </SafeAreaView>

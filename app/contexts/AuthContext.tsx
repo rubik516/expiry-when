@@ -62,8 +62,9 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       }
       return undefined;
     } catch (error) {
+      void error;
       addDialogItem({
-        message: "Fail retrieving user",
+        message: "Fail to retrieve user.",
         role: DialogRole.Danger,
       });
     }

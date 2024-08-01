@@ -6,6 +6,8 @@ import { useGlobalTheme } from "@/contexts/ThemeContext";
 import { Field } from "@/utils/field";
 import { getMonthDDYYYY, getMonthYYYY, NOW } from "@/utils/formatDate";
 
+import type { SingleChangeParams } from "@/types/datePicker";
+
 interface DatePickerFieldProps {
   error?: string;
   field: Field<Date | undefined>;
@@ -58,9 +60,9 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
       : getMonthDDYYYY(field.value.getTime().toString())
     : getMonthDDYYYY(NOW.getTime().toString());
 
-  const onConfirmChange = (params: any) => {
+  const onConfirmChange = (params: SingleChangeParams) => {
     const { date } = params;
-    onUpdate(date);
+    onUpdate(date as Date);
     closePicker();
   };
 

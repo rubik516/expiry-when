@@ -106,7 +106,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       method: "PATCH",
       body: JSON.stringify(productPayload),
     });
-    if (response && !response.ok) {
+    if (!response || !response.ok) {
       addDialogItem({
         message: "Updating product failed!",
         role: DialogRole.Danger,
@@ -116,7 +116,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
     }
 
     const updatedProduct = formatResponse(
-      (await response?.json()).data
+      (await response.json()).data
     ) as Product;
     onUpdate(updatedProduct);
     addDialogItem({
@@ -135,7 +135,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
       method: "PATCH",
       body: JSON.stringify(productPayload),
     });
-    if (response && !response.ok) {
+    if (!response || !response.ok) {
       addDialogItem({
         message: "Updating product failed!",
         role: DialogRole.Danger,
@@ -145,7 +145,7 @@ const ProductItemCard: React.FC<ProductItemCardProps> = ({
     }
 
     const updatedProduct = formatResponse(
-      (await response?.json()).data
+      (await response.json()).data
     ) as Product;
     onUpdate(updatedProduct);
     addDialogItem({

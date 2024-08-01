@@ -1,6 +1,6 @@
 {
   // words - list of words to be always considered correct
-  "words": ["MonthDDYYYY", "Pressable"],
+  "words": ["MonthDDYYYY", "navigations", "Pressable"],
   // flagWords - list of words to be always considered incorrect
   "flagWords": []
 }

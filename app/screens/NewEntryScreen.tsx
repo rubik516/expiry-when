@@ -3,8 +3,9 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import NewEntryForm from "@/containers/NewEntryForm";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
-import RouteName from "@/types/navigation";
 import { RouteParamList } from "@/types/navigation";
+
+import type RouteName from "@/types/navigation";
 
 const NewEntryScreen: React.FC<
   NativeStackScreenProps<RouteParamList, typeof RouteName.NewEntry>
