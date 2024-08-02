@@ -12,7 +12,6 @@ import { useGlobalTheme } from "@/contexts/ThemeContext";
 import { Field } from "@/utils/field";
 
 interface InputFieldProps<T> extends TextInputProps {
-  displayValue: string;
   error?: string;
   field: Field<T>;
   label: string;
@@ -22,7 +21,6 @@ interface InputFieldProps<T> extends TextInputProps {
 }
 
 const InputField = <T,>({
-  displayValue,
   error,
   field,
   label,
@@ -73,7 +71,7 @@ const InputField = <T,>({
         onChangeText={handleChange}
         placeholderTextColor={theme.color.primaryContainer}
         style={styles.input}
-        value={displayValue}
+        value={field.formattedValue}
         {...props}
       />
       {showError && <ErrorText text={error ?? "Something happened"} />}

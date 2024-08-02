@@ -19,6 +19,9 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true
   },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "typescript.preferences.importModuleSpecifier": "non-relative"

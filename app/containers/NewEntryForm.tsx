@@ -13,7 +13,7 @@ import { useLoading } from "@/contexts/LoadingContext";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import Product from "@/types/product";
 import { Field } from "@/utils/field";
-import { NOW } from "@/utils/formatDate";
+import { getMonthDDYYYY, getMonthYYYY, NOW } from "@/utils/formatDate";
 import formatPayload from "@/utils/formatPayload";
 import request from "@/utils/request";
 import { isFuture, isPastOf } from "@/utils/validateDate";
@@ -66,10 +66,18 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
   const goodForOptions = [6, 9, 12, 18, 24];
   const [hasBeenValidated, setHasBeenValidated] = useState<boolean>(false);
   const [fields, setFields] = useState({
-    entryTitle: new Field("", (value) => !!value),
-    startDate: new Field<Date | undefined>(NOW, (value) => !!value),
-    duration: new Field("", (value) => !!value),
-    bestBefore: new Field<Date | undefined>(undefined, (value) => !!value),
+    entryTitle: new Field({
+      value: "",
+    }),
+    startDate: new Field<Date | undefined>({
+      value: NOW,
+    }),
+    duration: new Field({
+      value: "",
+    }),
+    bestBefore: new Field<Date | undefined>({
+      value: undefined,
+    }),
   });
   const [formErrors, setFormErrors] = useState({
     entryTitle: "",
@@ -196,10 +204,30 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
   useEffect(() => {
     setFields((prevFields) => ({
       ...prevFields,
-      startDate: new Field<Date | undefined>(
-        prevFields.startDate.value,
-        (value) => validateStartDate(value)
-      ),
+      bestBefore: new Field<Date | undefined>({
+        value: prevFields.bestBefore.value,
+        validate: (value) => validateBestBefore(value),
+        format: (value) =>
+          value
+            ? isSimpleBestBefore
+              ? getMonthYYYY(value.getTime().toString())
+              : getMonthDDYYYY(value.getTime().toString())
+            : getMonthDDYYYY(NOW.getTime().toString()),
+      }),
+    }));
+  }, [isSimpleBestBefore]);
+
+  useEffect(() => {
+    setFields((prevFields) => ({
+      ...prevFields,
+      startDate: new Field<Date | undefined>({
+        value: prevFields.startDate.value,
+        validate: (value) => validateStartDate(value),
+        format: (value) =>
+          value
+            ? getMonthDDYYYY(value.getTime().toString())
+            : getMonthDDYYYY(NOW.getTime().toString()),
+      }),
     }));
     if (!savedForFuture) {
       updateField("startDate", NOW);
@@ -211,16 +239,21 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
   useEffect(() => {
     setFields((prevFields) => ({
       ...prevFields,
-      bestBefore: new Field<Date | undefined>(
-        prevFields.bestBefore.value,
-        (value) => validateBestBefore(value)
-      ),
+      bestBefore: new Field<Date | undefined>({
+        value: prevFields.bestBefore.value,
+        validate: (value) => validateBestBefore(value),
+        format: (value) =>
+          value
+            ? getMonthDDYYYY(value.getTime().toString())
+            : getMonthDDYYYY(NOW.getTime().toString()),
+      }),
     }));
     if (bestBeforeIncluded) {
+      const oneDay = 24 * 60 * 60 * 1000;
       const defaultBestBefore =
         fields.startDate.value && isFuture(fields.startDate.value)
-          ? new Date(fields.startDate.value?.getTime() + 24 * 60 * 60 * 1000)
-          : NOW;
+          ? new Date(fields.startDate.value?.getTime() + oneDay)
+          : new Date(NOW.getTime() + oneDay);
       updateField("bestBefore", defaultBestBefore);
       return;
     }
@@ -241,11 +274,13 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     if (!fields.duration.value) {
       setFormErrors((prevErrors) => {
         const updatedErrors = { ...prevErrors };
-        updatedErrors["duration"] = "Please enter a duration value.";
+        updatedErrors["duration"] = customDuration
+          ? "Please enter a duration value."
+          : "Please specify a duration value.";
         return updatedErrors;
       });
     }
-  }, [fields.duration.value]);
+  }, [fields.duration.value, customDuration]);
 
   useEffect(() => {
     setFields((prevFields) => {
@@ -299,7 +334,6 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
   return (
     <>
       <InputField
-        displayValue={fields.entryTitle.value}
         error={formErrors.entryTitle}
         label="Product"
         onUpdate={(value) => updateField("entryTitle", value)}
@@ -358,7 +392,6 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         )}
         {!!customDuration && (
           <InputField
-            displayValue={fields.duration.value}
             error={formErrors.duration}
             field={fields.duration}
             keyboardType="numeric"
@@ -384,7 +417,6 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
           <DatePickerField
             error={formErrors.bestBefore}
             label="Best Before"
-            isSimpleDate={isSimpleBestBefore}
             field={fields.bestBefore}
             onUpdate={(value) => updateField("bestBefore", value)}
             setShowPicker={setShowBestBefore}

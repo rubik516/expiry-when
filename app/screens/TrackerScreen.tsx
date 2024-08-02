@@ -32,7 +32,9 @@ export default function TrackerScreen() {
   });
 
   const [dateField, setDateField] = useState(
-    new Field<Date | undefined>(NOW, (value) => !!value)
+    new Field<Date | undefined>({
+      value: NOW,
+    })
   );
   const [showPicker, setShowPicker] = useState(false);
 

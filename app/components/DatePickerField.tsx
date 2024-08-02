@@ -1,17 +1,15 @@
-import { StyleSheet, Pressable, View, ViewStyle } from "react-native";
+import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
 
 import InputField from "@/components/InputField";
 import SingleDatePicker from "@/components/SingleDatePicker";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import { Field } from "@/utils/field";
-import { getMonthDDYYYY, getMonthYYYY, NOW } from "@/utils/formatDate";
 
 import type { SingleChangeParams } from "@/types/datePicker";
 
 interface DatePickerFieldProps {
   error?: string;
   field: Field<Date | undefined>;
-  isSimpleDate?: boolean;
   label: string;
   onUpdate: (value: Date) => void;
   placeholder?: string;
@@ -24,7 +22,6 @@ interface DatePickerFieldProps {
 const DatePickerField: React.FC<DatePickerFieldProps> = ({
   error,
   field,
-  isSimpleDate,
   label,
   onUpdate,
   setShowPicker,
@@ -54,12 +51,6 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
     setShowPicker(false);
   };
 
-  const displayValue = field.value
-    ? isSimpleDate
-      ? getMonthYYYY(field.value.getTime().toString())
-      : getMonthDDYYYY(field.value.getTime().toString())
-    : getMonthDDYYYY(NOW.getTime().toString());
-
   const onConfirmChange = (params: SingleChangeParams) => {
     const { date } = params;
     onUpdate(date as Date);
@@ -73,7 +64,6 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
   return (
     <View style={[styles.fieldWrapper, style]}>
       <InputField
-        displayValue={displayValue}
         editable={false}
         error={error}
         field={field}

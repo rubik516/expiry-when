@@ -99,7 +99,7 @@ const Dialog: React.FC<DialogProps> = (props) => {
       fontWeight: "600",
       maxWidth: "90%",
     },
-    submessage: {
+    subtext: {
       borderColor: onBackgroundVariant(item.role ?? DialogRole.Info),
       borderRadius: theme.border.radius.extraLight,
       borderWidth: theme.border.width.thin,
@@ -160,7 +160,7 @@ const Dialog: React.FC<DialogProps> = (props) => {
         >
           <Text style={styles.message}>{item.message}</Text>
           <Pressable onPress={closeDialog} style={styles.closeButton}>
-            <Text style={styles.submessage}>Close</Text>
+            <Text style={styles.subtext}>Close</Text>
           </Pressable>
         </Animated.View>
       )}

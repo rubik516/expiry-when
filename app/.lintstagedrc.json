@@ -1,5 +1,5 @@
 {
-  "./**/*.{js,jsx,ts,tsx,json}": ["npm run format"],
+  "./**/*.{js,jsx,ts,tsx,json}": ["npm run lint", "npm run format"],
   "./**/*.html": ["npm run format"],
   "./**/*.css": ["npm run format"],
   "./**/*.md": "npm run format"
