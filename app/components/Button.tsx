@@ -1,6 +1,8 @@
+import { FormattedMessage } from "react-intl";
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 export const Variant = {
   Primary: "primary",
@@ -68,7 +70,12 @@ const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       style={[styles.container, variantContainerStyle, ...viewStyles]}
     >
-      <Text style={[styles.label, variantLabelStyle]}>{label}</Text>
+      <Text style={[styles.label, variantLabelStyle]}>
+        <FormattedMessage
+          id={label}
+          defaultMessage={getDefaultMessage(label)}
+        />
+      </Text>
     </Pressable>
   );
 };

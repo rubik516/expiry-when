@@ -1,15 +1,19 @@
+import { PropsWithChildren } from "react";
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
+import getDefaultMessage from "@/utils/getDefaultMessage";
+import { FormattedMessage } from "react-intl";
 
-interface SelectChipProps {
-  label: string;
+interface SelectChipProps extends PropsWithChildren {
+  label?: string;
   onPress: () => void;
   selected: boolean;
   style?: ViewStyle;
 }
 
 const SelectChip: React.FC<SelectChipProps> = ({
+  children,
   label,
   onPress,
   selected,
@@ -28,7 +32,15 @@ const SelectChip: React.FC<SelectChipProps> = ({
   });
   return (
     <Pressable onPress={onPress} style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>
+        {label && (
+          <FormattedMessage
+            id={label}
+            defaultMessage={getDefaultMessage(label)}
+          />
+        )}
+        {children}
+      </Text>
     </Pressable>
   );
 };

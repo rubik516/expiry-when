@@ -1,7 +1,9 @@
+import { FormattedMessage } from "react-intl";
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import RouteName from "@/types/navigation";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
@@ -44,7 +46,10 @@ const BottomNav: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
                 : null,
             ]}
           >
-            Home
+            <FormattedMessage
+              id="screens.home"
+              defaultMessage={getDefaultMessage("screens.home")}
+            />
           </Text>
         </Pressable>
         <Pressable
@@ -59,7 +64,10 @@ const BottomNav: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
                 : null,
             ]}
           >
-            Tracker
+            <FormattedMessage
+              id="screens.tracker"
+              defaultMessage={getDefaultMessage("screens.tracker")}
+            />
           </Text>
         </Pressable>
         <Pressable
@@ -74,7 +82,10 @@ const BottomNav: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
                 : null,
             ]}
           >
-            Analytics
+            <FormattedMessage
+              id="screens.analytics"
+              defaultMessage={getDefaultMessage("screens.analytics")}
+            />
           </Text>
         </Pressable>
       </View>

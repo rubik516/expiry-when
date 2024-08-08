@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FormattedMessage } from "react-intl";
 import {
   Animated,
   Easing,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 const DIALOG_SHOWING_TIME = 5000;
 
@@ -158,9 +160,19 @@ const Dialog: React.FC<DialogProps> = (props) => {
             },
           ]}
         >
-          <Text style={styles.message}>{item.message}</Text>
+          <Text style={styles.message}>
+            <FormattedMessage
+              id={item.message}
+              defaultMessage={getDefaultMessage(item.message)}
+            />
+          </Text>
           <Pressable onPress={closeDialog} style={styles.closeButton}>
-            <Text style={styles.subtext}>Close</Text>
+            <Text style={styles.subtext}>
+              <FormattedMessage
+                id="shared.close"
+                defaultMessage={getDefaultMessage("shared.close")}
+              />
+            </Text>
           </Pressable>
         </Animated.View>
       )}

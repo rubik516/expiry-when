@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 import {
   SafeAreaView,
   SectionList,
@@ -10,10 +11,13 @@ import {
 import DatePickerField from "@/components/DatePickerField";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import usages from "@/mock-data/usages";
+import { UseTime } from "@/types/usage";
 import { Field } from "@/utils/field";
-import { NOW } from "@/utils/formatDate";
+import { getMonthDDYYYY, NOW } from "@/utils/formatDate";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 export default function TrackerScreen() {
+  const intl = useIntl();
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     container: {
@@ -34,6 +38,10 @@ export default function TrackerScreen() {
   const [dateField, setDateField] = useState(
     new Field<Date | undefined>({
       value: NOW,
+      format: (value) =>
+        value
+          ? getMonthDDYYYY(value.getTime(), intl)
+          : getMonthDDYYYY(NOW.getTime(), intl),
     })
   );
   const [showPicker, setShowPicker] = useState(false);
@@ -42,6 +50,7 @@ export default function TrackerScreen() {
     setDateField((prevField) => {
       const newField = prevField;
       newField.value = value;
+      newField.update();
       return newField;
     });
   };
@@ -56,21 +65,21 @@ export default function TrackerScreen() {
 
   const sections = [
     {
-      title: "Daytime",
+      title: "usages.section.daytime",
       data: usages.filter(
         (usage) =>
           dateField.value &&
           isSameDate(new Date(Number(usage.useDate)), dateField.value) &&
-          usage.useTime === "daytime"
+          usage.useTime === UseTime.Daytime
       ),
     },
     {
-      title: "Nighttime",
+      title: "usages.section.nighttime",
       data: usages.filter(
         (usage) =>
           dateField.value &&
           isSameDate(new Date(Number(usage.useDate)), dateField.value) &&
-          usage.useTime === "nighttime"
+          usage.useTime === UseTime.Nighttime
       ),
     },
   ];
@@ -78,9 +87,14 @@ export default function TrackerScreen() {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text style={styles.heading}>Tracker</Text>
+        <Text style={styles.heading}>
+          <FormattedMessage
+            id="screens.tracker"
+            defaultMessage={getDefaultMessage("screens.tracker")}
+          />
+        </Text>
         <DatePickerField
-          label="Date"
+          label="usage.new_item.date"
           field={dateField}
           onUpdate={updateDate}
           showPicker={showPicker}
@@ -90,7 +104,12 @@ export default function TrackerScreen() {
           sections={sections}
           renderItem={({ item }) => <Text>{item.productName}</Text>}
           renderSectionHeader={({ section }) => (
-            <Text style={styles.heading}>{section.title}</Text>
+            <Text style={styles.heading}>
+              <FormattedMessage
+                id={section.title}
+                defaultMessage={getDefaultMessage(section.title)}
+              />
+            </Text>
           )}
           stickySectionHeadersEnabled={false}
           keyExtractor={(item) => item.id.toString()}

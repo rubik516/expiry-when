@@ -1,6 +1,8 @@
+import { FormattedMessage } from "react-intl";
 import { Pressable, StyleSheet, Text, View, ViewStyle } from "react-native";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 interface CheckboxInputProps {
   checked: boolean;
@@ -48,7 +50,12 @@ const CheckboxInput: React.FC<CheckboxInputProps> = ({
       <View style={styles.checkbox}>
         {checked && <View style={styles.checked} />}
       </View>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>
+        <FormattedMessage
+          id={label}
+          defaultMessage={getDefaultMessage(label)}
+        />
+      </Text>
     </Pressable>
   );
 };

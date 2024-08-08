@@ -1,10 +1,10 @@
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import React, {
   createContext,
-  useState,
-  useContext,
   ReactNode,
+  useContext,
   useEffect,
+  useState,
 } from "react";
 
 import { DialogRole } from "@/components/Dialog";
@@ -39,7 +39,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     });
     if (!response || !response.ok) {
       addDialogItem({
-        message: "Creating new user failed!",
+        message: "error.user.create_failure",
         role: DialogRole.Danger,
       });
       return;
@@ -64,7 +64,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     } catch (error) {
       void error;
       addDialogItem({
-        message: "Fail to retrieve user.",
+        message: "error.user.retrieve_failure",
         role: DialogRole.Danger,
       });
     }

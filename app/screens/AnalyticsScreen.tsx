@@ -1,6 +1,8 @@
+import { FormattedMessage } from "react-intl";
 import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 export default function TrackerScreen() {
   const { theme } = useGlobalTheme();
@@ -22,7 +24,12 @@ export default function TrackerScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.heading}>Analytics</Text>
+      <Text style={styles.heading}>
+        <FormattedMessage
+          id="screens.analytics"
+          defaultMessage={getDefaultMessage("screens.analytics")}
+        />
+      </Text>
     </SafeAreaView>
   );
 }

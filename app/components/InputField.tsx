@@ -1,3 +1,4 @@
+import { FormattedMessage, useIntl } from "react-intl";
 import {
   StyleSheet,
   Text,
@@ -10,12 +11,14 @@ import {
 import ErrorText from "@/components/ErrorText";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import { Field } from "@/utils/field";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 interface InputFieldProps<T> extends TextInputProps {
   error?: string;
   field: Field<T>;
   label: string;
   onUpdate?: (value: string) => void;
+  placeholder?: string;
   showError?: boolean;
   style?: ViewStyle;
 }
@@ -25,10 +28,12 @@ const InputField = <T,>({
   field,
   label,
   onUpdate,
+  placeholder,
   showError,
   style,
   ...props
 }: InputFieldProps<T>) => {
+  const intl = useIntl();
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
     fieldContainer: {
@@ -66,15 +71,23 @@ const InputField = <T,>({
 
   return (
     <View style={[styles.fieldContainer, style]}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>
+        <FormattedMessage
+          id={label}
+          defaultMessage={getDefaultMessage(label)}
+        />
+      </Text>
       <TextInput
         onChangeText={handleChange}
         placeholderTextColor={theme.color.primaryContainer}
         style={styles.input}
         value={field.formattedValue}
+        {...(placeholder
+          ? { placeholder: intl.formatMessage({ id: placeholder }) }
+          : {})}
         {...props}
       />
-      {showError && <ErrorText text={error ?? "Something happened"} />}
+      {showError && <ErrorText text={error} />}
     </View>
   );
 };

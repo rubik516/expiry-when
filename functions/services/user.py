@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from repositories.user import UserRepository
 
 
@@ -11,7 +11,7 @@ class UserService:
         # ISO 8601 string value, so isoformat() is used here for
         # consistency with existing data.
         # Resource: https://rnfirebase.io/reference/auth/usermetadata
-        now = datetime.now().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         if "created_at" not in user_info:
             user_info["created_at"] = now
         if "last_login_at" not in user_info:
@@ -25,7 +25,7 @@ class UserService:
         return user.to_dict()
 
     def update_last_login(self, user_id):
-        now = datetime.now().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         last_login = {"last_login_at": now}
 
         updated_user = self.user_repo.overwrite_properties(user_id, last_login)

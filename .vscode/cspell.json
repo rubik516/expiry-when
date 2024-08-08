@@ -1,11 +1,14 @@
 {
   // words - list of words to be always considered correct
   "words": [
+    "appspot",
+    "firebaseapp",
     "firestore",
     "gcloud",
     "MonthDDYYYY",
     "navigations",
     "Pressable",
+    "uuidv4",
     "venv"
   ],
   // flagWords - list of words to be always considered incorrect

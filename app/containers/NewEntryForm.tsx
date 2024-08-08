@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 
 import Button, { Variant } from "@/components/Button";
@@ -15,6 +16,7 @@ import Product from "@/types/product";
 import { Field } from "@/utils/field";
 import { getMonthDDYYYY, getMonthYYYY, NOW } from "@/utils/formatDate";
 import formatPayload from "@/utils/formatPayload";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 import request from "@/utils/request";
 import { isFuture, isPastOf } from "@/utils/validateDate";
 
@@ -26,6 +28,7 @@ interface NewEntryFormProps {
 const NewEntryForm: React.FC<NewEntryFormProps> = ({
   onSubmissionCompletion,
 }) => {
+  const intl = useIntl();
   const { activateLoading, deactivateLoading } = useLoading();
   const { theme } = useGlobalTheme();
   const styles = StyleSheet.create({
@@ -138,7 +141,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       const isSuccessful = await createProduct();
       if (isSuccessful) {
         addDialogItem({
-          message: "Success: New product has been created!",
+          message: "dialog.products.create_success",
           role: DialogRole.Success,
         });
         deactivateLoading();
@@ -146,8 +149,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         return;
       }
       addDialogItem({
-        message:
-          "Error occurred while attempting to save your product. Please try again!",
+        message: "error.products.create_failure",
         role: DialogRole.Danger,
       });
       deactivateLoading();
@@ -155,7 +157,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     }
 
     addDialogItem({
-      message: "Please fix all the errors before continuing.",
+      message: "error.products.fix_all_prompt",
       role: DialogRole.Danger,
     });
   };
@@ -210,9 +212,9 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         format: (value) =>
           value
             ? isSimpleBestBefore
-              ? getMonthYYYY(value.getTime().toString())
-              : getMonthDDYYYY(value.getTime().toString())
-            : getMonthDDYYYY(NOW.getTime().toString()),
+              ? getMonthYYYY(value.getTime(), intl)
+              : getMonthDDYYYY(value.getTime(), intl)
+            : getMonthDDYYYY(NOW.getTime(), intl),
       }),
     }));
   }, [isSimpleBestBefore]);
@@ -225,8 +227,8 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         validate: (value) => validateStartDate(value),
         format: (value) =>
           value
-            ? getMonthDDYYYY(value.getTime().toString())
-            : getMonthDDYYYY(NOW.getTime().toString()),
+            ? getMonthDDYYYY(value.getTime(), intl)
+            : getMonthDDYYYY(NOW.getTime(), intl),
       }),
     }));
     if (!savedForFuture) {
@@ -244,8 +246,8 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         validate: (value) => validateBestBefore(value),
         format: (value) =>
           value
-            ? getMonthDDYYYY(value.getTime().toString())
-            : getMonthDDYYYY(NOW.getTime().toString()),
+            ? getMonthDDYYYY(value.getTime(), intl)
+            : getMonthDDYYYY(NOW.getTime(), intl),
       }),
     }));
     if (bestBeforeIncluded) {
@@ -264,7 +266,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     if (!fields.entryTitle.value) {
       setFormErrors((prevErrors) => {
         const updatedErrors = { ...prevErrors };
-        updatedErrors["entryTitle"] = "Please enter a product name.";
+        updatedErrors["entryTitle"] = "error.new_product.name";
         return updatedErrors;
       });
     }
@@ -275,8 +277,8 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       setFormErrors((prevErrors) => {
         const updatedErrors = { ...prevErrors };
         updatedErrors["duration"] = customDuration
-          ? "Please enter a duration value."
-          : "Please specify a duration value.";
+          ? "error.new_product.duration.custom"
+          : "error.new_product.duration";
         return updatedErrors;
       });
     }
@@ -298,7 +300,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       setFormErrors((prevErrors) => {
         const updatedErrors = { ...prevErrors };
         updatedErrors["startDate"] =
-          "Open date is in the future. Consider creating and saving the product for future uses.";
+          "error.new_product.start_date.invalid_future_start";
         return updatedErrors;
       });
     }
@@ -312,7 +314,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         setFormErrors((prevErrors) => {
           const updatedErrors = { ...prevErrors };
           updatedErrors["bestBefore"] =
-            "Best before date cannot be before the open date.";
+            "error.new_product.best_before.precedes_start";
           return updatedErrors;
         });
         return;
@@ -324,7 +326,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         setFormErrors((prevErrors) => {
           const updatedErrors = { ...prevErrors };
           updatedErrors["bestBefore"] =
-            "Best before date cannot be in the past";
+            "error.new_product.best_before.invalid_past_best_before";
           return updatedErrors;
         });
       }
@@ -335,9 +337,9 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     <>
       <InputField
         error={formErrors.entryTitle}
-        label="Product"
+        label="product.new_item.name"
         onUpdate={(value) => updateField("entryTitle", value)}
-        placeholder="Enter product"
+        placeholder="product.new_item.name.placeholder"
         field={fields.entryTitle}
         showError={hasBeenValidated && !fields.entryTitle.isValid}
         style={styles.field}
@@ -345,10 +347,10 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       {!savedForFuture && (
         <DatePickerField
           error={formErrors.startDate}
-          label="Start Date"
+          label="product.new_item.start_date"
           field={fields.startDate}
           onUpdate={(value) => updateField("startDate", value)}
-          placeholder="Choose a date"
+          placeholder="product.new_item.start_date.placeholder"
           showPicker={showStartDate}
           setShowPicker={setShowStartDate}
           showError={hasBeenValidated && !fields.startDate.isValid}
@@ -357,28 +359,42 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       )}
       <CheckboxInput
         checked={savedForFuture}
-        label="Save for future use"
+        label="product.new_item.start_date.save_for_future"
         onPress={() => {
           setSavedForFuture(!savedForFuture);
         }}
       />
       <View style={styles.goodForContainer}>
-        <Text style={styles.label}>Good For</Text>
+        <Text style={styles.label}>
+          <FormattedMessage
+            id="product.new_item.used_within"
+            defaultMessage={getDefaultMessage("product.new_item.used_within")}
+          />
+        </Text>
         <View style={styles.goodForGroup}>
           <View style={[styles.goodForGroupRow]}>
             {goodForOptions.map((option) => (
               <SelectChip
                 key={option}
-                label={`${option} months`}
                 onPress={() => {
                   setCustomDuration(false);
                   updateField("duration", option.toString());
                 }}
                 selected={fields.duration.value === option.toString()}
-              />
+              >
+                <FormattedMessage
+                  id="product.new_item.used_within.months"
+                  defaultMessage={getDefaultMessage(
+                    "product.new_item.used_within.months"
+                  )}
+                  values={{
+                    usedWithin: option,
+                  }}
+                />
+              </SelectChip>
             ))}
             <SelectChip
-              label="Custom"
+              label="product.new_item.used_within.custom"
               onPress={() => {
                 setCustomDuration(true);
                 updateField("duration", "");
@@ -395,9 +411,9 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
             error={formErrors.duration}
             field={fields.duration}
             keyboardType="numeric"
-            label="Good For (months)"
+            label="product.new_item.used_within.custom.input_label"
             onUpdate={(value) => updateField("duration", value)}
-            placeholder="6"
+            placeholder="product.new_item.used_within.custom.placeholder"
             showError={
               hasBeenValidated && customDuration && !fields.duration.isValid
             }
@@ -407,7 +423,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       </View>
       <CheckboxInput
         checked={bestBeforeIncluded}
-        label="Include best before date"
+        label="product.new_item.best_before.include_prompt"
         onPress={() => {
           setBestBeforeIncluded(!bestBeforeIncluded);
         }}
@@ -416,7 +432,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
         <>
           <DatePickerField
             error={formErrors.bestBefore}
-            label="Best Before"
+            label="product.new_item.best_before"
             field={fields.bestBefore}
             onUpdate={(value) => updateField("bestBefore", value)}
             setShowPicker={setShowBestBefore}
@@ -426,7 +442,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
           />
           <CheckboxInput
             checked={isSimpleBestBefore}
-            label="Only include month and year"
+            label="product.new_item.best_before.exclude_date_prompt"
             onPress={() => {
               setIsSimpleBestBefore(!isSimpleBestBefore);
             }}
@@ -435,7 +451,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       )}
       <Button
         onPress={submitEntry}
-        label="Add new entry"
+        label="product.new_item.add_button"
         variant={Variant.Primary}
       />
     </>

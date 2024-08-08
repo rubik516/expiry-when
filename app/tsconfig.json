@@ -10,6 +10,7 @@
       "@/constants/*": ["constants/*"],
       "@/containers/*": ["containers/*"],
       "@/contexts/*": ["contexts/*"],
+      "@/localization/*": ["localization/*"],
       "@/mock-data/*": ["mock-data/*"],
       "@/navigations/*": ["navigations/*"],
       "@/screens/*": ["screens/*"],

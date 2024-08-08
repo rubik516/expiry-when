@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { FormattedMessage } from "react-intl";
+import { StyleSheet, Text, View } from "react-native";
 
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import BottomTabs from "@/navigations/BottomTabs";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 export default function ProtectedApp() {
   const { user, loading } = useAuth();
@@ -45,7 +47,12 @@ export default function ProtectedApp() {
   if (!user) {
     return (
       <View style={styles.container}>
-        <Text>No user found</Text>
+        <Text>
+          <FormattedMessage
+            id="error.no_user"
+            defaultMessage={getDefaultMessage("error.no_user")}
+          />
+        </Text>
       </View>
     );
   }

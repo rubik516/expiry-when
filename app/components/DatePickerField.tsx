@@ -24,6 +24,7 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
   field,
   label,
   onUpdate,
+  placeholder,
   setShowPicker,
   showError,
   showPicker,
@@ -68,6 +69,7 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({
         error={error}
         field={field}
         label={label}
+        placeholder={placeholder}
         showError={showError}
       />
 

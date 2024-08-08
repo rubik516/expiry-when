@@ -1,20 +1,9 @@
+import { IntlShape } from "react-intl";
+
 import { SimpleDate } from "@/types/date";
+import getDefaultMessage from "@/utils/getDefaultMessage";
 
 export const NOW = new Date();
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 const ONE_DAY = 24 * 60 * 60 * 1000; // in milliseconds
 
 /** Format the duration between two dates, returning the result in the format `${years} year(s) ${months} month(s) ${days} day(s)`. If some values equal 0, they should be ignored in the formatted result.
@@ -35,7 +24,11 @@ const ONE_DAY = 24 * 60 * 60 * 1000; // in milliseconds
  *
  * @returns The duration between startDate and endDate in the format `${years} year(s) ${months} month(s) ${days} day(s)`, ignoring any values evaluated to 0 and their units.
  */
-export function formatDuration(startDate: string, endDate: string) {
+export function formatDuration(
+  startDate: string,
+  endDate: string,
+  intl: IntlShape
+) {
   const convertedStart = new Date(Number(startDate));
   const convertedEnd = new Date(Number(endDate));
 
@@ -53,63 +46,65 @@ export function formatDuration(startDate: string, endDate: string) {
 
   const daysBetween = (end - start) / ONE_DAY;
   if (daysBetween === 0) {
-    return "0 days";
+    return intl.formatMessage({
+      id: "products.item.used_duration.zero_days",
+      defaultMessage: getDefaultMessage(
+        "products.item.used_duration.zero_days"
+      ),
+    });
   }
 
   const years = Math.floor(daysBetween / 365);
   const months = Math.floor((daysBetween % 365) / 30);
   const days = Math.floor((daysBetween % 365) % 30);
 
-  const formattedYears = formatPlurality(years, "year");
-  const formattedMonths = formatPlurality(months, "month");
-  const formattedDays = formatPlurality(days, "day");
-
-  return [formattedYears, formattedMonths, formattedDays]
-    .filter((value) => value !== "")
-    .join(" ");
+  return intl.formatMessage(
+    {
+      id: "products.item.used_duration.formatted_duration",
+      defaultMessage: getDefaultMessage(
+        "products.item.used_duration.formatted_duration"
+      ),
+    },
+    {
+      years,
+      months,
+      days,
+    }
+  );
 }
 
-export function getHHMMSSMonthDDYYYY(timestamp: string) {
-  const date = new Date(Number(timestamp));
-  const hours = padWithZero(date.getHours());
-  const minutes = padWithZero(date.getMinutes());
-  const seconds = padWithZero(date.getSeconds());
-  const day = padWithZero(date.getDate());
-  const month = MONTHS[date.getMonth()];
-  const year = date.getFullYear();
-  return `${hours}:${minutes}:${seconds} on ${month} ${day}, ${year}`;
+export function getMonthDDYYYY(timestamp: number | string, intl: IntlShape) {
+  return intl.formatDate(timestamp, {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  });
 }
 
-export function getMonthDDYYYY(timestamp: string) {
-  const date = new Date(Number(timestamp));
-  const day = padWithZero(date.getDate());
-  const month = MONTHS[date.getMonth()];
-  const year = date.getFullYear();
-  return `${month} ${day}, ${year}`;
+export function getMonthYYYY(timestamp: number | string, intl: IntlShape) {
+  return intl.formatDate(timestamp, {
+    year: "numeric",
+    month: "long",
+    day: undefined,
+  });
 }
 
-export function getMonthYYYY(timestamp: string) {
-  const date = new Date(Number(timestamp));
-  const month = MONTHS[date.getMonth()];
-  const year = date.getFullYear();
-  return `${month} ${year}`;
-}
-
-export function getMonthDDYYYYFromSimpleDate(date: SimpleDate) {
-  const month = MONTHS[date.month]; // SimpleDate is 0-based month system
-  const year = date.year;
+export function getMonthDDYYYYFromSimpleDate(
+  date: SimpleDate,
+  intl: IntlShape
+) {
   if (!date.day) {
-    return `${month} ${year}`;
+    // SimpleDate is 0-based month system
+    return intl.formatDate(new Date(date.year, date.month), {
+      year: "numeric",
+      month: "long",
+      day: undefined,
+    });
   }
 
-  const day = padWithZero(date.day);
-  return `${month} ${day}, ${year}`;
+  return intl.formatDate(new Date(date.year, date.month, date.day), {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  });
 }
-
-function formatPlurality(value: number, unit: string): string {
-  return value >= 1 ? `${value} ${unit}${value > 1 ? "s" : ""}` : "";
-}
-
-const padWithZero = (value: number) => {
-  return value.toString().length == 2 ? value : `0${value}`;
-};
