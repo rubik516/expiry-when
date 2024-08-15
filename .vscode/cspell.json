@@ -4,6 +4,7 @@
     "appspot",
     "firebaseapp",
     "firestore",
+    "formatjs",
     "gcloud",
     "MonthDDYYYY",
     "navigations",

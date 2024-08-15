@@ -6,6 +6,10 @@ import getDefaultMessage from "@/utils/getDefaultMessage";
 export const NOW = new Date();
 const ONE_DAY = 24 * 60 * 60 * 1000; // in milliseconds
 
+export function convertToLocalDateTime(utcDate: Date) {
+  return new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60 * 1000);
+}
+
 /** Format the duration between two dates, returning the result in the format `${years} year(s) ${months} month(s) ${days} day(s)`. If some values equal 0, they should be ignored in the formatted result.
  * For simplicity, in the formatted result, this algorithm first assumes each year has 365 days and then each month has 30 days, disregarding leap years and months with other numbers of days.
  * However, the function still takes into consideration the correct number of days in each calendar month in its calculation.

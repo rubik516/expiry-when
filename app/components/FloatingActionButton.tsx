@@ -18,8 +18,8 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
     fab: {
       position: "absolute",
       right: 0,
-      bottom: 0,
-      margin: 15,
+      bottom: theme.spacing.lg,
+      margin: theme.spacing.md,
       backgroundColor: theme.color.onSecondary,
       borderRadius: theme.border.radius.rounded,
       height: theme.width.lg,

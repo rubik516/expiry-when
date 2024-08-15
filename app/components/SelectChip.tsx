@@ -1,9 +1,9 @@
 import { PropsWithChildren } from "react";
+import { FormattedMessage } from "react-intl";
 import { Pressable, StyleSheet, Text, ViewStyle } from "react-native";
 
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import getDefaultMessage from "@/utils/getDefaultMessage";
-import { FormattedMessage } from "react-intl";
 
 interface SelectChipProps extends PropsWithChildren {
   label?: string;

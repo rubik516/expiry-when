@@ -1,4 +1,6 @@
+import * as Localization from "expo-localization";
 import { IntlProvider } from "react-intl";
+import { NativeModules, Platform } from "react-native";
 import { en, registerTranslation } from "react-native-paper-dates";
 
 import "@formatjs/intl-getcanonicallocales/polyfill";
@@ -25,12 +27,28 @@ import ProtectedApp from "@/navigations/ProtectedApp";
 export default function App() {
   registerTranslation("en", en);
 
+  const deviceLanguage =
+    Platform.OS === "ios"
+      ? NativeModules.SettingsManager.settings.AppleLocale // iOS
+      : NativeModules.I18nManager.localeIdentifier; // Android
+  const locale = deviceLanguage.split(/[-_]/)[0];
+
+  const isLanguageSupported = (locale: string) => {
+    try {
+      Intl.DateTimeFormat.supportedLocalesOf(locale);
+      return true;
+    } catch (error) {
+      console.log(`Locale is not supported: ${error}`);
+      return false;
+    }
+  };
+
   return (
     <IntlProvider
-      locale="en"
+      locale={isLanguageSupported(locale) ? locale : "en"}
       messages={English}
       defaultLocale="en"
-      timeZone="Canada/Pacific"
+      timeZone={Localization.getCalendars()[0].timeZone ?? "Canada/Pacific"}
     >
       <LoadingProvider>
         <DialogProvider>
