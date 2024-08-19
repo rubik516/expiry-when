@@ -13,6 +13,7 @@ import { useDialogManager } from "@/contexts/DialogManagerContext";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useGlobalTheme } from "@/contexts/ThemeContext";
 import Product from "@/types/product";
+import { getLastDayOfMonth } from "@/utils/date";
 import { Field } from "@/utils/field";
 import { getMonthDDYYYY, getMonthYYYY, NOW } from "@/utils/formatDate";
 import formatPayload from "@/utils/formatPayload";
@@ -67,13 +68,18 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
   const [isSimpleBestBefore, setIsSimpleBestBefore] = useState<boolean>(false);
   const [customDuration, setCustomDuration] = useState<boolean>(false);
   const goodForOptions = [6, 9, 12, 18, 24];
-  const [hasBeenValidated, setHasBeenValidated] = useState<boolean>(false);
+  const [isSubmissionTriggered, setIsSubmissionTriggered] =
+    useState<boolean>(false);
   const [fields, setFields] = useState({
     entryTitle: new Field({
       value: "",
     }),
     startDate: new Field<Date | undefined>({
       value: NOW,
+      format: (value) =>
+        value
+          ? getMonthDDYYYY(value.getTime(), intl)
+          : getMonthDDYYYY(NOW.getTime(), intl),
     }),
     duration: new Field({
       value: "",
@@ -134,8 +140,56 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     return true;
   };
 
-  const submitEntry = async () => {
-    setHasBeenValidated(true);
+  const handleBestBeforeField = (value: Date) => {
+    updateField("bestBefore", value);
+    setFields((prevFields) => {
+      const updatedFields = { ...prevFields };
+      updatedFields["startDate"].update(); // validate start date field as its validity depends on best before
+      return updatedFields;
+    });
+
+    if (isSubmissionTriggered) {
+      validateBestBeforeField();
+      validateStartDateField();
+    }
+  };
+
+  const handleDurationField = (value: string) => {
+    updateField("duration", value);
+    if (isSubmissionTriggered) {
+      validateDurationField();
+    }
+  };
+
+  const handleProductNameField = (value: string) => {
+    updateField("entryTitle", value);
+    if (isSubmissionTriggered) {
+      validateProductNameField();
+    }
+  };
+
+  const handleStartDateField = (value: Date) => {
+    updateField("startDate", value);
+    setFields((prevFields) => {
+      const updatedFields = { ...prevFields };
+      updatedFields["bestBefore"].update(); // validate best before field as its validity depends on start date
+      return updatedFields;
+    });
+
+    if (isSubmissionTriggered) {
+      validateStartDateField();
+      validateBestBeforeField();
+    }
+  };
+
+  const onEndEditingCustomDurationInput = () => {
+    if (goodForOptions.includes(Number(fields.duration.value))) {
+      setCustomDuration(false);
+    }
+  };
+
+  const submit = async () => {
+    setIsSubmissionTriggered(true);
     const canSubmit = validateInputs();
     if (canSubmit) {
       const isSuccessful = await createProduct();
@@ -162,6 +216,18 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     });
   };
 
+  const toggleBestBeforeIncluded = () => {
+    setBestBeforeIncluded(!bestBeforeIncluded);
+  };
+
+  const toggleIsSimpleBestBefore = () => {
+    setIsSimpleBestBefore(!isSimpleBestBefore);
+  };
+
+  const toggleSavedForFuture = () => {
+    setSavedForFuture(!savedForFuture);
+  };
+
   const updateField = <K extends keyof typeof fields>(
     fieldKey: K,
     value: (typeof fields)[K]["value"]
@@ -178,20 +244,84 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     bestBefore: Date | undefined
   ) => {
     if (bestBeforeIncluded) {
-      const isPastOfStart: boolean =
+      const isPastOfStart =
         !!fields.startDate.value &&
         !!bestBefore &&
         isPastOf(fields.startDate.value, bestBefore);
-      const isPastOfNow: boolean = !!bestBefore && isPastOf(NOW, bestBefore);
-      const isValid: boolean = !isPastOfNow && !isPastOfStart;
+      const isPastOfNow = !!bestBefore && isPastOf(NOW, bestBefore);
+      const isValid = !isPastOfNow && !isPastOfStart;
       return isValid;
     }
     return true;
   };
 
+  const validateBestBeforeField = () => {
+    if (bestBeforeIncluded && !fields.bestBefore.value) {
+      setFormErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        updatedErrors["bestBefore"] = "error.new_product.best_before.absent";
+        return updatedErrors;
+      });
+      return;
+    }
+
+    if (bestBeforeIncluded) {
+      const isBestBeforePastOfStart =
+        !!fields.startDate.value &&
+        !!fields.bestBefore.value &&
+        isPastOf(fields.startDate.value, fields.bestBefore.value);
+      if (isBestBeforePastOfStart) {
+        setFormErrors((prevErrors) => {
+          const updatedErrors = { ...prevErrors };
+          updatedErrors["bestBefore"] =
+            "error.new_product.best_before.precedes_start";
+          return updatedErrors;
+        });
+        return;
+      }
+
+      const isBestBeforePastOfNow =
+        !!fields.bestBefore.value && isPastOf(NOW, fields.bestBefore.value);
+      if (isBestBeforePastOfNow) {
+        setFormErrors((prevErrors) => {
+          const updatedErrors = { ...prevErrors };
+          updatedErrors["bestBefore"] =
+            "error.new_product.best_before.invalid_past_best_before";
+          return updatedErrors;
+        });
+      }
+    }
+  };
+
+  const validateDurationField = () => {
+    if (!fields.duration.value) {
+      setFormErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        updatedErrors["duration"] = customDuration
+          ? "error.new_product.duration.custom"
+          : "error.new_product.duration";
+        return updatedErrors;
+      });
+    }
+  };
+
   const validateInputs = () => {
+    validateProductNameField();
+    validateDurationField();
+    validateStartDateField();
+    validateBestBeforeField();
     const canSubmit = Object.values(fields).every((field) => field.isValid);
     return canSubmit;
+  };
+
+  const validateProductNameField = () => {
+    if (!fields.entryTitle.value) {
+      setFormErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        updatedErrors["entryTitle"] = "error.new_product.name";
+        return updatedErrors;
+      });
+    }
   };
 
   const validateStartDate: (startDate: Date | undefined) => boolean = (
@@ -203,21 +333,33 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
     return true;
   };
 
+  const validateStartDateField = () => {
+    if (!savedForFuture && !fields.startDate.value) {
+      setFormErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        updatedErrors["startDate"] = "error.new_product.start_date.absent";
+        return updatedErrors;
+      });
+      return;
+    }
+
+    if (
+      !savedForFuture &&
+      fields.startDate.value &&
+      isFuture(fields.startDate.value)
+    ) {
+      setFormErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        updatedErrors["startDate"] =
+          "error.new_product.start_date.invalid_future_start";
+        return updatedErrors;
+      });
+    }
+  };
+
   useEffect(() => {
-    setFields((prevFields) => ({
-      ...prevFields,
-      bestBefore: new Field<Date | undefined>({
-        value: prevFields.bestBefore.value,
-        validate: (value) => validateBestBefore(value),
-        format: (value) =>
-          value
-            ? isSimpleBestBefore
-              ? getMonthYYYY(value.getTime(), intl)
-              : getMonthDDYYYY(value.getTime(), intl)
-            : getMonthDDYYYY(NOW.getTime(), intl),
-      }),
-    }));
-  }, [isSimpleBestBefore]);
+    validateDurationField();
+  }, [customDuration]);
 
   useEffect(() => {
     setFields((prevFields) => ({
@@ -250,6 +392,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
             : getMonthDDYYYY(NOW.getTime(), intl),
       }),
     }));
+
     if (bestBeforeIncluded) {
       const oneDay = 24 * 60 * 60 * 1000;
       const defaultBestBefore =
@@ -263,85 +406,30 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
   }, [bestBeforeIncluded]);
 
   useEffect(() => {
-    if (!fields.entryTitle.value) {
-      setFormErrors((prevErrors) => {
-        const updatedErrors = { ...prevErrors };
-        updatedErrors["entryTitle"] = "error.new_product.name";
-        return updatedErrors;
-      });
-    }
-  }, [fields.entryTitle.value]);
-
-  useEffect(() => {
-    if (!fields.duration.value) {
-      setFormErrors((prevErrors) => {
-        const updatedErrors = { ...prevErrors };
-        updatedErrors["duration"] = customDuration
-          ? "error.new_product.duration.custom"
-          : "error.new_product.duration";
-        return updatedErrors;
-      });
-    }
-  }, [fields.duration.value, customDuration]);
-
-  useEffect(() => {
-    setFields((prevFields) => {
-      const updatedFields = { ...prevFields };
-      updatedFields["startDate"].update();
-      updatedFields["bestBefore"].update();
-      return updatedFields;
-    });
-
-    if (
-      !savedForFuture &&
-      fields.startDate.value &&
-      isFuture(fields.startDate.value)
-    ) {
-      setFormErrors((prevErrors) => {
-        const updatedErrors = { ...prevErrors };
-        updatedErrors["startDate"] =
-          "error.new_product.start_date.invalid_future_start";
-        return updatedErrors;
-      });
-    }
-
-    if (bestBeforeIncluded) {
-      const isBestBeforePastOfStart =
-        !!fields.startDate.value &&
-        !!fields.bestBefore.value &&
-        isPastOf(fields.startDate.value, fields.bestBefore.value);
-      if (isBestBeforePastOfStart) {
-        setFormErrors((prevErrors) => {
-          const updatedErrors = { ...prevErrors };
-          updatedErrors["bestBefore"] =
-            "error.new_product.best_before.precedes_start";
-          return updatedErrors;
-        });
-        return;
-      }
-
-      const isBestBeforePastOfNow =
-        !!fields.bestBefore.value && isPastOf(NOW, fields.bestBefore.value);
-      if (isBestBeforePastOfNow) {
-        setFormErrors((prevErrors) => {
-          const updatedErrors = { ...prevErrors };
-          updatedErrors["bestBefore"] =
-            "error.new_product.best_before.invalid_past_best_before";
-          return updatedErrors;
-        });
-      }
-    }
-  }, [fields.bestBefore.value, fields.startDate.value]);
+    setFields((prevFields) => ({
+      ...prevFields,
+      bestBefore: new Field<Date | undefined>({
+        value: getLastDayOfMonth(prevFields.bestBefore.value ?? new Date()), // set the default best before date to the last day of the month
+        validate: (value) => validateBestBefore(value),
+        format: (value) =>
+          value
+            ? isSimpleBestBefore
+              ? getMonthYYYY(value.getTime(), intl)
+              : getMonthDDYYYY(value.getTime(), intl)
+            : getMonthDDYYYY(NOW.getTime(), intl),
+      }),
+    }));
+  }, [isSimpleBestBefore]);
 
   return (
     <>
       <InputField
         error={formErrors.entryTitle}
         label="product.new_item.name"
-        onUpdate={(value) => updateField("entryTitle", value)}
+        onUpdate={(value) => handleProductNameField(value)}
         placeholder="product.new_item.name.placeholder"
         field={fields.entryTitle}
-        showError={hasBeenValidated && !fields.entryTitle.isValid}
+        showError={isSubmissionTriggered && !fields.entryTitle.isValid}
         style={styles.field}
       />
       {!savedForFuture && (
@@ -349,20 +437,18 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
           error={formErrors.startDate}
           label="product.new_item.start_date"
           field={fields.startDate}
-          onUpdate={(value) => updateField("startDate", value)}
+          onUpdate={(value) => handleStartDateField(value)}
           placeholder="product.new_item.start_date.placeholder"
           showPicker={showStartDate}
           setShowPicker={setShowStartDate}
-          showError={hasBeenValidated && !fields.startDate.isValid}
+          showError={isSubmissionTriggered && !fields.startDate.isValid}
           style={styles.field}
         />
       )}
       <CheckboxInput
         checked={savedForFuture}
         label="product.new_item.start_date.save_for_future"
-        onPress={() => {
-          setSavedForFuture(!savedForFuture);
-        }}
+        onPress={toggleSavedForFuture}
       />
       <View style={styles.goodForContainer}>
         <Text style={styles.label}>
@@ -378,7 +464,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
                 key={option}
                 onPress={() => {
                   setCustomDuration(false);
-                  updateField("duration", option.toString());
+                  handleDurationField(option.toString());
                 }}
                 selected={fields.duration.value === option.toString()}
               >
@@ -397,25 +483,28 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
               label="product.new_item.used_within.custom"
               onPress={() => {
                 setCustomDuration(true);
-                updateField("duration", "");
+                handleDurationField("");
               }}
               selected={customDuration}
             />
           </View>
         </View>
-        {!customDuration && hasBeenValidated && !fields.duration.isValid && (
-          <ErrorText text={formErrors.duration} />
-        )}
+        {!customDuration &&
+          isSubmissionTriggered &&
+          !fields.duration.isValid && <ErrorText text={formErrors.duration} />}
         {!!customDuration && (
           <InputField
             error={formErrors.duration}
             field={fields.duration}
             keyboardType="numeric"
             label="product.new_item.used_within.custom.input_label"
-            onUpdate={(value) => updateField("duration", value)}
+            onEndEditing={onEndEditingCustomDurationInput}
+            onUpdate={(value) => handleDurationField(value)}
             placeholder="product.new_item.used_within.custom.placeholder"
             showError={
-              hasBeenValidated && customDuration && !fields.duration.isValid
+              isSubmissionTriggered &&
+              customDuration &&
+              !fields.duration.isValid
             }
             style={styles.field}
           />
@@ -424,9 +513,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
       <CheckboxInput
         checked={bestBeforeIncluded}
         label="product.new_item.best_before.include_prompt"
-        onPress={() => {
-          setBestBeforeIncluded(!bestBeforeIncluded);
-        }}
+        onPress={toggleBestBeforeIncluded}
       />
       {bestBeforeIncluded && (
         <>
@@ -434,23 +521,21 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
             error={formErrors.bestBefore}
             label="product.new_item.best_before"
             field={fields.bestBefore}
-            onUpdate={(value) => updateField("bestBefore", value)}
+            onUpdate={(value) => handleBestBeforeField(value)}
             setShowPicker={setShowBestBefore}
-            showError={hasBeenValidated && !fields.bestBefore.isValid}
+            showError={isSubmissionTriggered && !fields.bestBefore.isValid}
             showPicker={showBestBefore}
             style={styles.field}
           />
           <CheckboxInput
             checked={isSimpleBestBefore}
             label="product.new_item.best_before.exclude_date_prompt"
-            onPress={() => {
-              setIsSimpleBestBefore(!isSimpleBestBefore);
-            }}
+            onPress={toggleIsSimpleBestBefore}
           />
         </>
       )}
       <Button
-        onPress={submitEntry}
+        onPress={submit}
         label="product.new_item.add_button"
         variant={Variant.Primary}
       />

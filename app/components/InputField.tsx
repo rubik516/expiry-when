@@ -17,6 +17,7 @@ interface InputFieldProps<T> extends TextInputProps {
   error?: string;
   field: Field<T>;
   label: string;
+  onEndEditing?: () => void;
   onUpdate?: (value: string) => void;
   placeholder?: string;
   showError?: boolean;
@@ -27,6 +28,7 @@ const InputField = <T,>({
   error,
   field,
   label,
+  onEndEditing,
   onUpdate,
   placeholder,
   showError,
@@ -79,6 +81,7 @@ const InputField = <T,>({
       </Text>
       <TextInput
         onChangeText={handleChange}
+        onEndEditing={onEndEditing}
         placeholderTextColor={theme.color.primaryContainer}
         style={styles.input}
         value={field.formattedValue}
